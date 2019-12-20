@@ -1,0 +1,11 @@
+function new_data = fano_recon(data,fano_a,fano_b,fano_c,fano_e,fano_g,fano_q)
+new_data = data;
+[nr,nc,nz] = size(data.map);
+new_map = zeros(nr,nc,nz);
+a = fano_a; b = fano_b; c = fano_c; e = fano_e; g = fano_g; q = fano_q;
+for i=1:nz
+    energy = data.e(
+    new_map(:,:,i) = a.*((data.e(i) - e)./g + q).^2./(1 + ((data.e(i) - e)./g).^2) + b*data.e(i) + c;
+end
+    new_data.map = new_map;
+end

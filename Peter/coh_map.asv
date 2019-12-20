@@ -1,0 +1,49 @@
+function coh_map(data)
+
+
+map=data.map;
+en=data.e;
+
+
+[nx ny nz]=size(map);
+
+cmap=zeros(nx,ny);
+
+for k=1:length(en)
+    if en(k)== -3.5
+        ind1=k;
+    elseif en(k)== -3.0
+        ind2=k;
+    elseif en(k)== -2.5
+        ind3=k;    
+    elseif en(k)== -0.5
+        ind4=k;
+    elseif en(k)== 0
+        ind5=k;
+    elseif en(k)== 2.0
+        ind6=k;
+    elseif en(k)== 2.5
+        ind7=k;
+    elseif en(k)== 3.0
+        ind8=k;
+    end
+end
+
+
+for i=1:nx
+    for j=1:ny
+        peaks=(mean(map(i,j,ind1:ind3))+mean(map(i,j,ind6:ind8)))/2;
+        gap=mean(map(i,j,ind4:ind5));
+        cmap(i,j)=peaks
+    end
+end
+
+
+
+
+
+
+
+
+
+end

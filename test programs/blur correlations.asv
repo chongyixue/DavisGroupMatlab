@@ -1,0 +1,27 @@
+n = 100;
+data1 = DeltaNR;
+data2 = GNR;
+corr_val = zeros(n,n);
+for i = 1:n
+    i
+    for j= 1:n
+        corr_val(i,j)= ncorr2(blur(DeltaNR,50,i),blur(GNR,50,j));
+    end
+end
+ img_plot2(corr_val);
+clear i n data1 data2
+%%
+corr_val = zeros(1,69);
+for i=1:69
+    corr_val(i) = ncorr2(G_MNR4.map(:,:,i),DeltaNR);
+end
+figure; plot(G_MNR4.e*1000,corr_val);
+clear i corr_val
+%%
+map = G_disp_mod.map;
+for i=1:69
+    tmp = map(:,:,i);
+    tmp(A) = 0;
+    map(:,:,i) = tmp;
+end
+clear i  tmp

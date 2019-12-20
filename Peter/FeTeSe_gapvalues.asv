@@ -1,0 +1,77 @@
+function gapvalues=FeTeSe_gapvalues(spec, egy)
+
+
+
+% calculate the numerical derivatives, add a "d" for every derivative
+% taken, so "specd" is the first derivative, "specdd" the second, and so
+% on...
+[specd, egyd]=numderivative(spec, egy);
+[specdd, egydd]=numderivative(specd, egyd);
+[specddd, egyddd]=numderivative(specdd, egydd);
+% normalize the spectra and th derivatives to bring them all onto
+% the same scale
+spec = spec/max(abs(spec));
+specd = specd/max(abs(specd));
+specdd = specdd/max(abs(specdd));
+specddd = specddd/max(abs(specddd));
+% plot the average spectrum and the derivatives
+figure, 
+plot(egy,spec,'k.-',egyd,specd,'r.-',egydd,specdd,'b.-',...
+    egyddd,specddd,'g.-')
+% find the maxima and minima of the average sepctrum, the first and second
+% derivative
+sel=(max(spec)-min(spec))/10;
+[amaxLoc] = peakfinder(spec, sel, 0, 1);
+[aminLoc] = peakfinder(spec, sel, 1, -1);
+
+sel=(max(specd)-min(specd))/10;
+[amaxLocd] = peakfinder(specd, sel, 0, 1);
+[aminLocd] = peakfinder(specd, sel, 1, -1);
+
+sel=(max(specdd)-min(specdd))/10;
+[amaxLocdd] = peakfinder(specdd, sel, 0, 1);
+[aminLocdd] = peakfinder(specdd, sel, 1, -1);
+
+%% Calculate values for the average spectrum
+    % find the central minimum of the average spectrum: "cmspec", and its index
+    % cmind
+    im = abs( aminLoc - round(length(egy)/2) );
+    [minimum, minind] = min(im);
+    cmind = aminLoc(minind);
+    cmspec = egy( cmind );
+    clear im minimum minind;
+    % find the average coherence peak below "acohl" and above "acohr" 
+    % the chemical potential
+    im = abs( amaxLoc - cmind );
+    [minimum, minind] = min(im);
+    im(minind) = length(egy);
+    [minimum2, minind2] = min(im);
+    if amaxLoc(minind) < amaxLoc(minind2)
+        acohlind = amaxLoc(minind);
+        acohl = egy(acohlind);
+        acohrind = amaxLoc(minind2);
+        acohr = egy(acohrind);
+    else
+        acohlind = amaxLoc(minind2);
+        acohl = egy(acohlind);
+        acohrind = amaxLoc(minind1);
+        acohr = egy(acohrind);
+    end
+    clear im minimum minind minimum2 minind2;
+    % find the steepest slope between the gap and the coherence peaks below 
+    % "sllspec" and above "slrspec" the chemical potential
+    im = abs( amaxLocd - cmind );
+    [minimum, minind] = min(im);
+    im2 = abs( aminLocd - cmind );
+    [minimum2, minind2] = min(im2);
+    sllspecnd = aminLocd(minind2);
+    sllspec = egyd( sllspecnd );
+    slrspecnd = amaxLocd(minind);
+    slrspec = egyd( slrspecnd );
+    clear im im2 minimum minind minimum2 minind2;
+
+    
+    
+    
+    
+end

@@ -1,0 +1,5 @@
+%%
+figure; 
+for i = 3:20
+    plot(cut.r,cut.cut(:,i), 'color',cols(i,:)); hold on;
+end

@@ -1,0 +1,288 @@
+%% create Fourier Transform
+
+FFT = load_map_qpi('C:\Users\Peter\Desktop\Cornell_PhD\Data\NaFeCoAs_data\May_2013\05_01_13\NaFeAs30501A00.mat',...
+    'feenstra','','vh','',0,0,0,0);
+% for inputs see load_map_qpi
+%% take cut and the polar average
+
+[ln_cut,O]=qpi_cut(FFT,4,45);
+% first input FFT, second input offset from center for taking cuts, and
+% third input angle at which the cut is taken
+
+%%
+qpi_fit(O,4,[1,3,npeaks,FFT)
+%%
+for k=1:length(O(1,:))
+    x=1:1:length(O(:,k));
+    y=O(:,k);
+    z(:,1)=x;
+    z(:,2)=y;
+    data=ftsmooth(z,'n',7,3);
+    figure;
+    plot(z(:,1),z(:,2),'r',data(:,1),data(:,2),'k','Linewidth',2)
+end
+%% Fitting procedure
+% input for offset of the fitting
+close all;
+offset=4;
+% x = (1+offset):(length(ln_cut.cut(:,1))+offset);
+x = (1+offset):(length(O(:,1))+offset);
+% starting guess for the fitting paramters
+guess = [0.7 0.1 0.9 40 5 0.004];
+% --------------------------------------------------------------------------
+% A1 and A2 determine how many and which layers are supposed to be fitted 
+A1=2;
+A2=4;
+% vector containing the q coordinates
+q = zeros(1,A2-A1+1);
+tol = 1e-6;
+t=1;
+
+% normalize to one 
+test2=ln_cut.cut(:,2)/max(ln_cut.cut(:,2));
+% fit once to get a better starting guess (actually seems to improve the
+% fit of the first layer quite a bit)
+% for i=1:10
+% [y_new, p] = complete_fit(test2,[x(1) x(end)],guess,1000*ln_cut.e(2));
+% guess = coeffvalues(p);
+% end
+% O is the output of the polar average
+for i=1:10
+    low=guess*0.5;
+    upp=guess*1.5;
+    test=O(:,A1)/max(O(:,A1));
+    [y_new, p] = complete_fit(test,[x(1) x(end)],guess,1000*ln_cut.e(A1),low,upp);
+    guess = coeffvalues(p);
+end
+
+for k=A1:A2
+    low=guess*0.5;
+    upp=guess*1.5;
+%     test2=ln_cut.cut(:,k)/max(ln_cut.cut(:,k));
+%     [y_new, p] = complete_fit(test2,[x(1) x(end)],guess,1000*ln_cut.e(k));
+%     [y_new, p] = complete_fit(ln_cut424.cut(:,k),[x(1)
+%     x(end)],guess,1000*ln_cut.e(k));
+% O is the output of the polar average
+        test=O(:,k)/max(O(:,k));
+        [y_new, p] = complete_fit(test,[x(1) x(end)],guess,1000*ln_cut.e(k),low,upp);
+        guess = coeffvalues(p);
+        q(t) = guess(4);
+    t = t+1; 
+end
+
+
+clear low;
+clear upp;
+
+% close all;
+figure;
+plot(q,ln_cut.e(A1:A2),'.')
+A3=A1;
+% %% double peak fitting
+close all;
+% input for offset of the fitting
+offset=4;
+% x = (1+offset):(length(ln_cut.cut(:,1))+offset);
+x = (1+offset):(length(O(:,1))+offset);
+% starting guess for the fitting paramters
+% guess = [guess(1) guess(2) guess(3) guess(4) guess(5) guess(3) 90
+% guess(5) guess(6)];
+guess = [guess(1) guess(2) guess(3) guess(4) guess(5) guess(3) 90 guess(6)];
+% --------------------------------------------------------------------------
+% A1 and A2 determine how many and which layers are supposed to be fitted 
+A1=5;
+A2=8;
+% vector containing the q coordinates
+q1 = zeros(1,A2-A1+1);
+q2 = zeros(1,A2-A1+1);
+tol = 1e-6;
+t=1;
+
+% normalize to one 
+test2=ln_cut.cut(:,2)/max(ln_cut.cut(:,2));
+% fit once to get a better starting guess (actually seems to improve the
+% fit of the first layer quite a bit)
+% for i=1:10
+% [y_new, p] = complete_fit_double(test2,[x(1) x(end)],guess,1000*ln_cut.e(2));
+% guess = coeffvalues(p);
+% end
+% O is the output of the polar average
+for i=1:10
+%     low = [guess(1:2)*0.5 guess(3)*0.5 guess(4)*0.7 guess(5)*0.5 guess(6)*0.5 guess(4)*1.5 guess(8)*0.5 guess(9)*0.5];
+%     upp = [guess(1:2)*1.5 guess(3)*1.5 guess(4)*1.3 guess(5)*1.5 guess(6)*1.5 guess(7)*1.5 guess(8)*1.5 guess(9)*1.5];
+    low = [guess(1:2)*0.5 guess(3)*0.5 guess(4)*0.7 guess(5)*0.5 guess(6)*0.5 guess(4)*1.5 guess(8)*0.5];
+    upp = [guess(1:2)*1.5 guess(3)*1.5 guess(4)*1.3 guess(5)*1.5 guess(6)*1.5 guess(7)*1.5 guess(8)*1.5];
+    test=O(:,A1)/max(O(:,A1));
+    [y_new, p] = complete_fit_double(test,[x(1) x(end)],guess,1000*ln_cut.e(A1),low,upp);
+    guess = coeffvalues(p);
+end
+
+for k=A1:A2
+%     low = [guess(1:2)*0.5 guess(3)*0.5 guess(4)*0.7 guess(5)*0.5 guess(6)*0.5 guess(4)*1.5 guess(8)*0.5 guess(9)*0.5];
+%     upp = [guess(1:2)*1.5 guess(3)*1.5 guess(4)*1.3 guess(5)*1.5 guess(6)*1.5 guess(7)*1.5 guess(8)*1.5 guess(9)*1.5];
+        low = [guess(1:2)*0.5 guess(3)*0.5 guess(4)*0.7 guess(5)*0.5 guess(6)*0.5 guess(4)*1.5 guess(8)*0.5];
+    upp = [guess(1:2)*1.5 guess(3)*1.5 guess(4)*1.3 guess(5)*1.5 guess(6)*1.5 guess(7)*1.5 guess(8)*1.5];
+%     test2=ln_cut.cut(:,k)/max(ln_cut.cut(:,k));
+%     [y_new, p] = complete_fit_double(test2,[x(1) x(end)],guess,1000*ln_cut.e(k));
+%     [y_new, p] = complete_fit_double(ln_cut424.cut(:,k),[x(1) x(end)],guess,1000*ln_cut.e(k));
+% O is the output of the polar average
+        test=O(:,k)/max(O(:,k));
+        [y_new, p] = complete_fit_double(test,[x(1) x(end)],guess,1000*ln_cut.e(k),low,upp);
+        guess = coeffvalues(p);
+        q1(t) = guess(4);
+        q2(t) = guess(7);
+    t = t+1; 
+end
+
+clear low;
+clear upp;
+% close all;
+figure;
+plot([q q1],ln_cut.e(A3:A2),'.')
+figure;
+plot(q2,ln_cut.e(A1:A2),'.')
+A4=A1;
+% %% triple peak fitting
+close all;
+% input for offset of the fitting
+offset=4;
+% x = (1+offset):(length(ln_cut.cut(:,1))+offset);
+x = (1+offset):(length(O(:,1))+offset);
+% starting guess for the fitting paramters
+% guess = [guess(1) guess(2) guess(3) guess(4) guess(5) guess(6) guess(7) guess(8) guess(6) 100 guess(8) guess(9)];
+guess = [guess(1) guess(2) guess(3) guess(4) guess(5) guess(6) guess(7) guess(6) 100 guess(8)];
+% --------------------------------------------------------------------------
+% A1 and A2 determine how many and which layers are supposed to be fitted 
+A1=9;
+A2=17;
+% vector containing the q coordinates
+q3 = zeros(1,A2-A1+1);
+q4 = zeros(1,A2-A1+1);
+q5 = zeros(1,A2-A1+1);
+tol = 1e-6;
+t=1;
+
+% normalize to one 
+test2=ln_cut.cut(:,2)/max(ln_cut.cut(:,2));
+% fit once to get a better starting guess (actually seems to improve the
+% fit of the first layer quite a bit)
+% for i=1:10
+% [y_new, p] = complete_fit_triple(test2,[x(1) x(end)],guess,1000*ln_cut.e(2));
+% guess = coeffvalues(p);
+% end
+% O is the output of the polar average
+for i=1:10
+%     low = [guess(1:2)*0.5 guess(3)*0.5 guess(4)*0.7 guess(5)*0.5 guess(6)*0.5 guess(4)*1.5 guess(8)*0.5...
+%     guess(9)*0.5 guess(7)*1.5 guess(11)*0.5 guess(12)*0.5];
+%     upp = [guess(1:2)*1.5 guess(3)*1.5 guess(4)*1.3 guess(5)*1.5 guess(6)*1.5 guess(7)*1.3 guess(8)*1.5...
+%     guess(9)*1.5 guess(10)*1.5 guess(11)*1.5 guess(12)*1.5];
+    low = [guess(1:2)*0.5 guess(3)*0.5 guess(4)*0.7 guess(5)*0.5 guess(6)*0.5 guess(4)*1.5...
+    guess(8)*0.5 guess(7)*1.5 guess(10)*0.5];
+    upp = [guess(1:2)*1.5 guess(3)*1.5 guess(4)*1.3 guess(5)*1.5 guess(6)*1.5 guess(7)*1.3...
+    guess(8)*1.5 guess(9)*1.5 guess(10)*1.5];
+
+
+    test=O(:,A1)/max(O(:,A1));
+    [y_new, p] = complete_fit_triple(test,[x(1) x(end)],guess,1000*ln_cut.e(A1),low,upp);
+    guess = coeffvalues(p);
+end
+
+for k=A1:A2
+%     low = [guess(1:2)*0.5 guess(3)*0.5 guess(4)*0.7 guess(5)*0.5 guess(6)*0.5 guess(4)*1.5 guess(8)*0.5...
+%     guess(9)*0.5 guess(7)*1.5 guess(11)*0.5 guess(12)*0.5];
+%     upp = [guess(1:2)*1.5 guess(3)*1.5 guess(4)*1.3 guess(5)*1.5 guess(6)*1.5 guess(7)*1.3 guess(8)*1.5...
+%     guess(9)*1.5 guess(10)*1.5 guess(11)*1.5 guess(12)*1.5];
+    low = [guess(1:2)*0.5 guess(3)*0.5 guess(4)*0.7 guess(5)*0.5 guess(6)*0.5 guess(4)*1.5...
+    guess(8)*0.5 guess(7)*1.5 guess(10)*0.5];
+    upp = [guess(1:2)*1.5 guess(3)*1.5 guess(4)*1.3 guess(5)*1.5 guess(6)*1.5 guess(7)*1.3...
+    guess(8)*1.5 guess(9)*1.5 guess(10)*1.5];
+
+%     test2=ln_cut.cut(:,k)/max(ln_cut.cut(:,k));
+%     [y_new, p] = complete_fit_triple(test2,[x(1) x(end)],guess,1000*ln_cut.e(k));
+%     [y_new, p] = complete_fit_triple(ln_cut424.cut(:,k),[x(1) x(end)],guess,1000*ln_cut.e(k));
+% O is the output of the polar average
+        test=O(:,k)/max(O(:,k));
+        [y_new, p] = complete_fit_triple(test,[x(1) x(end)],guess,1000*ln_cut.e(k),low,upp);
+        guess = coeffvalues(p);
+        q3(t) = guess(4);
+        q4(t) = guess(7);
+%         q5(t) = guess(10);
+        q5(t) = guess(9);
+    t = t+1; 
+end
+
+clear low;
+clear upp;
+% close all;
+figure;
+plot([q q1 q3],ln_cut.e(A3:A2),'.')
+figure;
+plot([q2 q4],ln_cut.e(A4:A2),'.')
+figure;
+plot(q5,ln_cut.e(A1:A2),'.')
+A5=A1;
+%% triple peak fitting
+close all;
+% input for offset of the fitting
+offset=4;
+% x = (1+offset):(length(ln_cut.cut(:,1))+offset);
+x = (1+offset):(length(O(:,1))+offset);
+% starting guess for the fitting paramters
+guess = [guess(1) guess(2) guess(3) guess(4) guess(5) guess(6) guess(7) guess(8) guess(6) 100 guess(8) guess(9)];
+% --------------------------------------------------------------------------
+% A1 and A2 determine how many and which layers are supposed to be fitted 
+A1=18;
+A2=27;
+% vector containing the q coordinates
+q6 = zeros(1,A2-A1+1);
+q7 = zeros(1,A2-A1+1);
+q8 = zeros(1,A2-A1+1);
+tol = 1e-6;
+t=1;
+
+% normalize to one 
+test2=ln_cut.cut(:,2)/max(ln_cut.cut(:,2));
+% fit once to get a better starting guess (actually seems to improve the
+% fit of the first layer quite a bit)
+% for i=1:10
+% [y_new, p] = complete_fit_triple(test2,[x(1) x(end)],guess,1000*ln_cut.e(2));
+% guess = coeffvalues(p);
+% end
+% O is the output of the polar average
+for i=1:10
+    low = [guess(1:2)*0.5 guess(3)*0.5 19-2*i guess(5)*0.5 guess(6)*0.5 53-2*i guess(8)*0.5...
+    guess(9)*0.5 79-2*i guess(11)*0.5 guess(12)*0.5];
+    upp = [guess(1:2)*1.5 guess(3)*1.5 19 guess(5)*1.5 guess(6)*1.5 53 guess(8)*1.5...
+    guess(9)*1.5 79 guess(11)*1.5 guess(12)*1.5];
+    test=O(:,A1)/max(O(:,A1));
+    [y_new, p] = complete_fit_triple(test,[x(1) x(end)],guess,1000*ln_cut.e(A1),low,upp);
+    guess = coeffvalues(p);
+end
+
+close all;
+
+for k=A1:A2
+    low = [guess(1:2)*0.5 guess(3)*0.5 19-2*k guess(5)*0.5 guess(6)*0.5 53-2*k guess(8)*0.5...
+    guess(9)*0.5 79-2*k guess(11)*0.5 guess(12)*0.5];
+    upp = [guess(1:2)*1.5 guess(3)*1.5 19 guess(5)*1.5 guess(6)*1.5 53 guess(8)*1.5...
+    guess(9)*1.5 79 guess(11)*1.5 guess(12)*1.5];
+%     test2=ln_cut.cut(:,k)/max(ln_cut.cut(:,k));
+%     [y_new, p] = complete_fit_triple(test2,[x(1) x(end)],guess,1000*ln_cut.e(k));
+%     [y_new, p] = complete_fit_triple(ln_cut424.cut(:,k),[x(1) x(end)],guess,1000*ln_cut.e(k));
+% O is the output of the polar average
+        test=O(:,k)/max(O(:,k));
+        [y_new, p] = complete_fit_triple(test,[x(1) x(end)],guess,1000*ln_cut.e(k),low,upp);
+        guess = coeffvalues(p);
+        q6(t) = guess(4);
+        q7(t) = guess(7);
+        q8(t) = guess(10);
+    t = t+1; 
+end
+
+% close all;
+figure;
+plot([q q1 q3 q6],ln_cut.e(A3:A2),'.')
+figure;
+plot([q2 q4 q7],ln_cut.e(A4:A2),'.')
+figure;
+plot([q5 q8],ln_cut.e(A5:A2),'.')

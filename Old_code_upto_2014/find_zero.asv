@@ -1,0 +1,13 @@
+function index = find_zero(y)
+index = find(y==0);
+if isempty(index);
+       sign_y = sign(y);
+   if (sum(sign_y == 1) && sum(sign_y == -1))   
+       % find the zero cross in the 
+       zero_indic = sign_y(1:end-1) + sign_y(2:end);
+       index = find(zero_indic == 0);           
+   else
+       display('no zero found');
+   end
+end
+end

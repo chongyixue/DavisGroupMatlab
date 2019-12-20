@@ -1,0 +1,354 @@
+
+close all;
+clear all;
+
+%% All 3 Tesla maps, load the vortex positions and combine them all in two
+%% arrays ThreeTx (x coord.) and ThreeTy (y coord.)
+load C:\Users\Peter\Desktop\Cornell_PhD\Data\NaFeCoAs_data\May_2013\05_04_13\Vortex_050413.mat
+
+ThreeTx=vortex.hresx;
+ThreeTy=vortex.hresy;
+clear vortex;
+
+load C:\Users\Peter\Desktop\Cornell_PhD\Data\NaFeCoAs_data\May_2013\05_06_13\Vortex_050613.mat
+
+ThreeTx=[ThreeTx vortex.hresx];
+ThreeTy=[ThreeTy vortex.hresy];
+clear vortex;
+
+load C:\Users\Peter\Desktop\Cornell_PhD\Data\NaFeCoAs_data\May_2013\05_08_13\Vortex_050813.mat
+
+ThreeTx=[ThreeTx vortex.hresx];
+ThreeTy=[ThreeTy vortex.hresy];
+clear vortex;
+
+load C:\Users\Peter\Desktop\Cornell_PhD\Data\NaFeCoAs_data\May_2013\05_15_13\Vortex_051513.mat
+
+ThreeTx=[ThreeTx vortex.hresx];
+ThreeTy=[ThreeTy vortex.hresy];
+clear vortex;
+
+load C:\Users\Peter\Desktop\Cornell_PhD\Data\NaFeCoAs_data\May_2013\05_23_13\Vortex_052313.mat
+
+ThreeTx=[ThreeTx vortex.hresx];
+ThreeTy=[ThreeTy vortex.hresy];
+clear vortex;
+
+load C:\Users\Peter\Desktop\Cornell_PhD\Data\NaFeCoAs_data\May_2013\05_27_13\Vortex_052713.mat
+
+ThreeTx=[ThreeTx vortex.hresx];
+ThreeTy=[ThreeTy vortex.hresy];
+clear vortex;
+
+%% All 1 T maps, load the vortex positions and combine them all in two
+%% arrays OneTx (x coord.) and OneTy (y coord.)
+load C:\Users\Peter\Desktop\Cornell_PhD\Data\NaFeCoAs_data\June_2013\06_02_13\Vortex_060213.mat
+
+OneTx=vortex.hresx;
+OneTy=vortex.hresy;
+clear vortex;
+
+%% All 6 T maps, load the vortex positions and combine them all in two
+%% arrays SixTx (x coord.) and SixTy (y coord.)
+load C:\Users\Peter\Desktop\Cornell_PhD\Data\NaFeCoAs_data\June_2013\06_12_13\Vortex_061213.mat
+
+SixTx=vortex.hresx;
+SixTy=vortex.hresy;
+clear vortex;
+
+load C:\Users\Peter\Desktop\Cornell_PhD\Data\NaFeCoAs_data\June_2013\06_13_13\Vortex_061313.mat
+
+SixTx=[SixTx vortex.hresx];
+SixTy=[SixTy vortex.hresy];
+clear vortex;
+
+%% All 8 T maps, load the vortex positions and combine them all in two
+%% arrays EightTx (x coord.) and EightTy (y coord.)
+load C:\Users\Peter\Desktop\Cornell_PhD\Data\NaFeCoAs_data\June_2013\06_14_13\Vortex_061413.mat
+
+EightTx=vortex.hresx;
+EightTy=vortex.hresy;
+clear vortex;
+
+%% All 4 T maps, load the vortex positions and combine them all in two
+%% arrays FourTx (x coord.) and FourTy (y coord.)
+load C:\Users\Peter\Desktop\Cornell_PhD\Data\NaFeCoAs_data\June_2013\06_17_13\Vortex_061713.mat
+
+FourTx=vortex.hresx;
+FourTy=vortex.hresy;
+clear vortex;
+
+
+%% Get the coordinates of all the vortex cores that are in the highres topo
+%% area
+clear OneTxx OneTyy ThreeTxx ThreeTyy FourTxx FourTyy SixTxx SixTyy EightTxx EightTyy
+clear AllTxx AllTyy
+t=1;
+for i=1:length(OneTx)
+    if OneTx(i) <=0 || OneTx(i) > 512 || OneTy(i) <=0 || OneTy(i) >512
+    else
+        OneTxx(t)=OneTx(i);
+        OneTyy(t)=OneTy(i);
+        t=t+1;
+    end
+end
+
+t=1;
+for i=1:length(ThreeTx)
+    if ThreeTx(i) <=0 || ThreeTx(i) > 512 || ThreeTy(i) <=0 || ThreeTy(i) >512
+    else
+       ThreeTxx(t)=ThreeTx(i);
+       ThreeTyy(t)=ThreeTy(i); 
+       t=t+1;
+    end
+end
+
+t=1;
+for i=1:length(FourTx)
+    if FourTx(i) <=0 || FourTx(i) > 512 || FourTy(i) <=0 || FourTy(i) >512
+    else
+        FourTxx(t)=FourTx(i);
+        FourTyy(t)=FourTy(i);
+        t=t+1;
+    end
+end
+
+t=1;
+for i=1:length(SixTx)
+    if SixTx(i) <=0 || SixTx(i) > 512 || SixTy(i) <=0 || SixTy(i) >512
+    else
+        SixTxx(t)=SixTx(i);
+        SixTyy(t)=SixTy(i);
+        t=t+1;
+    end
+end
+
+t=1;
+for i=1:length(EightTx)
+    if EightTx(i) <=0 || EightTx(i) > 512 || EightTy(i) <=0 || EightTy(i) >512
+    else
+        EightTxx(t)=EightTx(i);
+        EightTyy(t)=EightTy(i);
+        t=t+1;
+    end
+end
+
+AllTxx=[OneTxx, ThreeTxx, FourTxx, SixTxx, EightTxx];
+AllTyy=[OneTyy, ThreeTyy, FourTyy, SixTyy, EightTyy];
+
+
+%% save the vortex positions that are in the high res topo as .dat-files
+save('C:\Users\Peter\Desktop\Text_files\OneTx.dat','OneTxx','-ASCII');
+save('C:\Users\Peter\Desktop\Text_files\OneTy.dat','OneTyy','-ASCII');
+save('C:\Users\Peter\Desktop\Text_files\ThreeTx.dat','ThreeTxx','-ASCII');
+save('C:\Users\Peter\Desktop\Text_files\ThreeTy.dat','ThreeTyy','-ASCII');
+save('C:\Users\Peter\Desktop\Text_files\FourTx.dat','FourTxx','-ASCII');
+save('C:\Users\Peter\Desktop\Text_files\FourTy.dat','FourTyy','-ASCII');
+save('C:\Users\Peter\Desktop\Text_files\SixTx.dat','SixTxx','-ASCII');
+save('C:\Users\Peter\Desktop\Text_files\SixTy.dat','SixTyy','-ASCII');
+save('C:\Users\Peter\Desktop\Text_files\EightTx.dat','EightTxx','-ASCII');
+save('C:\Users\Peter\Desktop\Text_files\EightTy.dat','EightTyy','-ASCII');
+save('C:\Users\Peter\Desktop\Text_files\AllTx.dat','AllTxx','-ASCII');
+save('C:\Users\Peter\Desktop\Text_files\AllTy.dat','AllTyy','-ASCII');
+%% 
+
+m=Ones(512,512);
+%% Get the high resolution 
+STM_View_v2
+% changed contrast of the atomic resolution map
+Topo=obj_30606A03_T.map;
+
+%% Create meshgrid for fit-function
+[X,Y]=meshgrid(1:1:512,1:1:512);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% EXAMPLE HOW TO USE MESHGRID - START
+% [X,Y] = meshgrid(-2:.2:2, -2:.2:2);                                
+% Z = X .* exp(-X.^2 - Y.^2);  
+% figure;
+% surf(X,Y,Z)
+% EXAMPLE - END
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+xdata(:,:,1)=X;
+xdata(:,:,2)=Y;
+%% the whole highres topo including the strip where the tip changed
+Topon=Topo-mean(mean(Topo))+1;
+Toponm=Topo-mean(mean(Topo))+1;
+
+for i =1:length(AllTxx)
+    x0 = [-1; AllTxx(i); 5; AllTyy(i); 5; 1; 0];
+    % Height, x-pos, x-var, y-pos, y-var, offset, angle for rotation(just zero here all the
+    % time)
+    mgauss(:,:,i)=twodgauss(x0,xdata);
+    Toponm=Toponm.*mgauss(:,:,i);
+%     imagesc(mgauss(:,:,i))
+%     pause(1)
+    close all
+end
+
+%% Lower right
+Topon=Topo(201:512,201:512)-mean(mean(Topo(201:512,201:512)));
+Toponm=Topo(201:512,201:512)-mean(mean(Topo(201:512,201:512)));
+Toponmm=Toponm;
+
+for i =1:length(AllTxx)
+    x0 = [1; AllTxx(i); 3; AllTyy(i); 3; 0; 0];
+    % Height, x-pos, x-var, y-pos, y-var, offset, angle for rotation(just zero here all the
+    % time)
+    x2 = round(rand(1)*512);
+    x3 = round(rand(1)*512);
+    x1 = [1; x2; 3; x3; 3; 0; 0];
+    
+    mgauss(:,:,i)=twodgauss(x0,xdata);
+    rgauss(:,:,i)=twodgauss(x1,xdata);
+    Toponm=Toponm.*mgauss(201:512,201:512,i);
+    if i==1 
+        Toponmmm=Toponmm.*mgauss(201:512,201:512,i);
+        Toponrrr=Toponmm.*rgauss(201:512,201:512,i);
+    else
+        Toponmmm=Toponmmm+Toponmm.*mgauss(201:512,201:512,i);
+        Toponrrr=Toponrrr+Toponmm.*rgauss(201:512,201:512,i);
+    end
+%     imagesc(mgauss(:,:,i))
+%     pause(1)
+%     close all
+end
+
+figure, imagesc(mgauss(:,:,5));
+figure, imagesc(rgauss(:,:,5));
+
+figure, imagesc(Toponmmm), colormap(gray)
+figure, imagesc(Toponrrr), colormap(gray)
+
+a=sum(mgauss,3);
+figure, imagesc(a)
+
+r=sum(rgauss,3);
+figure, imagesc(r)
+
+figure;
+imagesc(Topon)
+colormap(gray);
+
+figure;
+imagesc(Toponm)
+colormap(gray)
+
+% corr_data1 = normxcorr2d(Topon,Topon);
+% % 
+% % corr_data2 = normxcorr2d(Toponm,Toponm);
+% % 
+% % corr_data3 = normxcorr2d(Topon,Toponm);
+% % 
+corr_data4 = normxcorr2d(Topon,(Toponmmm));
+
+
+corr_data5 = normxcorr2d(Topon,(Toponrrr));
+
+
+% img_plot3(corr_data4-corr_data1);
+
+%% Lower left
+Topon=Topo(201:512,1:312)-mean(mean(Topo(201:512,1:312)));
+Toponm=Topo(201:512,1:312)-mean(mean(Topo(201:512,1:312)));
+
+for i =1:length(AllTxx)
+    x0 = [-1; AllTxx(i); 5; AllTyy(i); 5; 1; 0];
+    % Height, x-pos, x-var, y-pos, y-var, offset, angle for rotation(just zero here all the
+    % time)
+    mgauss(:,:,i)=twodgauss(x0,xdata);
+    Toponm=Toponm.*mgauss(201:512,1:312,i);
+%     imagesc(mgauss(:,:,i))
+%     pause(1)
+    close all
+end
+
+a=sum(mgauss,3);
+imagesc(a)
+
+figure;
+imagesc(Topon)
+colormap(gray);
+
+figure;
+imagesc(Toponm)
+colormap(gray)
+
+
+%% Upper left
+Topon=Topo(1:185,1:185)-mean(mean(Topo(1:185,1:185)));
+Toponm=Topo(1:185,1:185)-mean(mean(Topo(1:185,1:185)));
+
+for i =1:length(AllTxx)
+    x0 = [-1; AllTxx(i); 5; AllTyy(i); 5; 1; 0];
+    % Height, x-pos, x-var, y-pos, y-var, offset, angle for rotation(just zero here all the
+    % time)
+    mgauss(:,:,i)=twodgauss(x0,xdata);
+    Toponm=Toponm.*mgauss(1:185,1:185,i);
+%     imagesc(mgauss(:,:,i))
+%     pause(1)
+    close all
+end
+
+a=sum(mgauss,3);
+imagesc(a)
+
+figure;
+imagesc(Topon)
+colormap(gray);
+
+figure;
+imagesc(Toponm)
+colormap(gray)
+
+%% Upper Middle
+Topon=Topo(1:185,186:370)-mean(mean(Topo(1:185,186:370)));
+Toponm=Topo(1:185,186:370)-mean(mean(Topo(1:185,186:370)));
+
+for i =1:length(AllTxx)
+    x0 = [-1; AllTxx(i); 5; AllTyy(i); 5; 1; 0];
+    % Height, x-pos, x-var, y-pos, y-var, offset, angle for rotation(just zero here all the
+    % time)
+    mgauss(:,:,i)=twodgauss(x0,xdata);
+    Toponm=Toponm.*mgauss(1:185,186:370,i);
+%     imagesc(mgauss(:,:,i))
+%     pause(1)
+    close all
+end
+
+a=sum(mgauss,3);
+imagesc(a)
+
+figure;
+imagesc(Topon)
+colormap(gray);
+
+figure;
+imagesc(Toponm)
+colormap(gray)
+
+%% Upper Right
+Topon=Topo(1:185,328:512)-mean(mean(Topo(1:185,328:512)));
+Toponm=Topo(1:185,328:512)-mean(mean(Topo(1:185,328:512)));
+
+for i =1:length(AllTxx)
+    x0 = [-1; AllTxx(i); 5; AllTyy(i); 5; 1; 0];
+    % Height, x-pos, x-var, y-pos, y-var, offset, angle for rotation(just zero here all the
+    % time)
+    mgauss(:,:,i)=twodgauss(x0,xdata);
+    Toponm=Toponm.*mgauss(1:185,328:512,i);
+%     imagesc(mgauss(:,:,i))
+%     pause(1)
+    close all
+end
+
+a=sum(mgauss,3);
+imagesc(a)
+
+figure;
+imagesc(Topon)
+colormap(gray);
+
+figure;
+imagesc(Toponm)
+colormap(gray)

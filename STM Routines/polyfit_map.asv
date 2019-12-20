@@ -1,0 +1,16 @@
+function polyfit_map(map,energy,order,name)
+
+[nr,nc,nz] = size(map);
+%nr =3;
+%nc =3;
+for i = 1:nr
+    for j = 1:nc
+        [p,g] = poly_fit(energy,squeeze(squeeze(map(i,j,:))));
+        p(i,j) = p;
+        gof(i,j) = g;        
+    end
+end
+
+
+assignin('base',[name 'poly_param' ],param);
+assignin('base',[name 'poly_gof' ],fog);

@@ -1,0 +1,15 @@
+for i=1:4096
+    omega(data(i,1)+1,data(i,2)+1) = data(i,5);
+end
+%% Down sample 
+
+gmap_down = zeros(64,64);
+tmp = zeros(128,128);
+for i=1:128
+    for j=1:128
+        tmp(i,j) = mod(j,2)*mod(i,2);
+    end
+end
+   
+gmap_down = gmap(logical(tmp));
+cmap_down = reshape(ctmap_down,64,64);

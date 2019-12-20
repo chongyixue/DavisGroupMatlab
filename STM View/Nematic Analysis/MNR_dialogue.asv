@@ -1,0 +1,22 @@
+function MNR_dialogue(data)
+prompt={'Pixel Average Radius','Pixel Value to Skip (leave blank to skip nothing)','global or Local Normalization'};
+name='MNR Map Options';
+numlines=1;         
+defaultanswer={'0','','Global'};
+answer = inputdlg(prompt,name,numlines,defaultanswer);
+
+if strcmp(answer{3},'Global')
+    if ~strcmp(answer{2},'')    
+        new_data = MNR2(data,str2double(answer{1}),answer{2});
+    else
+        new_data = MNR2(data,str2double(answer{1}));
+    end
+elseif strcmp(answer{3},'Local')
+    if ~strcmp(answer{2},'')    
+        new_data = MNR3(data,str2double(answer{1}),answer{2});
+    else
+        new_data = MNR3(data,str2double(answer{1}));
+    end
+end
+img_obj_viewer2(new_data);
+end

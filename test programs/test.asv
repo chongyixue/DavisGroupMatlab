@@ -1,0 +1,18 @@
+function [A B] = get_points(map,coord)
+h = figure;
+pcolor(coord,coord,map); shading interp; colormap(defect);
+q=0;s=0;
+count = 0;
+while ~isempty(q)
+    if count ==2
+        return
+    end
+   [x1,y1]=ginput(1);
+   if 
+   A(1) = x1; A(2) = y1;
+   count = count +1;
+   %plot([x x1],[y y1],'b.-');
+   hold on
+   q=x1;s=y1;
+end
+end

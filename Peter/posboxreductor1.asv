@@ -1,0 +1,90 @@
+function [xcor2, ycor2] = posboxreductor1(topo, xcor, ycor, normdis)
+
+
+q=1;
+for i=1:length(xcor)
+    clear dis disfur;
+    for j=1:length(xcor)
+        dis(j)=((xcor(i)-xcor(j))^2+(ycor(i)-ycor(j))^2)^0.5;
+    end
+        disfur=dis;
+        
+        [mini, minind1]=min(dis);
+        dis(minind1)=max(dis);
+        if mini(1) < (1.7*normdis)
+            yn1 = 1;
+        else
+            yn1 = 0;
+        end
+        
+        
+        [mini, minind2]=min(dis);
+        dis(minind2)=max(dis);
+        if mini(1) < (1.7*normdis)
+            yn2 = 1;
+        else
+            yn2 = 0;
+        end
+        
+        [mini, minind3]=min(dis);
+        dis(minind3)=max(dis);
+        if mini(1) < (1.7*normdis)
+            yn3 = 1;
+        else
+            yn3 = 0;
+        end
+        
+        [mini, minind4]=min(dis);
+        if mini(1) < (1.7*normdis)
+            yn1 = 1;
+        else
+            yn1 = 0;
+        end
+        
+        
+        [O1,R]=vortex_coherence_length(topo,0,360,10,round(xcor(i)),round(ycor(i)));
+        O2=vortex_coherence_length(topo,0,360,10,round(xcor(minind1)),round(ycor(minind1)));
+        O3=vortex_coherence_length(topo,0,360,10,round(xcor(minind2)),round(ycor(minind2)));
+        O4=vortex_coherence_length(topo,0,360,10,round(xcor(minind3)),round(ycor(minind3)));
+        O5=vortex_coherence_length(topo,0,360,10,round(xcor(minind4)),round(ycor(minind4)));
+        [maxi, maxind]=max([mean(O1) mean(O2) mean(O3) mean(O4) mean(O5)]);        
+        
+
+%         figure, plot(R,O1,R,O2,R,O3,R,O4,R,O5);
+%         [maxi, maxind]=max([topo(round(ycor(i)),round(xcor(i))) topo(round(ycor(minind1)),round(xcor(minind1)))...
+%             topo(round(ycor(minind2)),round(xcor(minind2))) topo(round(ycor(minind3)),round(xcor(minind3))) ...
+%             topo(round(ycor(minind4)),round(xcor(minind4)))]);
+        
+        
+        if maxind == 1
+            xcor2(q)= xcor(i);
+            ycor2(q)= ycor(i);
+        elseif maxind ==2
+            xcor2(q)= xcor(minind1);
+            ycor2(q)= ycor(minind1);
+        elseif maxind ==3
+            xcor2(q)= xcor(minind2);
+            ycor2(q)= ycor(minind2);
+        elseif maxind ==4
+            xcor2(q)= xcor(minind3);
+            ycor2(q)= ycor(minind3);
+        elseif maxind ==5
+            xcor2(q)= xcor(minind4);
+            ycor2(q)= ycor(minind4);
+        end
+        q=q+1;
+end
+
+end
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,39 @@
+function topon=boxestoones(topo)
+
+a=26;
+a=52;
+% a=78;
+
+for i=1:a:312
+    for j=1:a:312
+        
+        topo1=topo(i:i+a-1,j:j+a-1);
+        [nx ny nz]=size(topo1);
+        for k=1:nx
+            for l=1:ny
+                if topo1(k,l)<= mean(mean(topo1))+0.15*(max(max(topo1))-mean(mean(topo1)))
+                    topo2(k,l)=0;
+                else
+                    topo2(k,l)=1;
+                end
+            end
+        end
+%         figure, imagesc(topo1), colormap(gray)
+%         figure, imagesc(topo2), colormap(gray)
+        topon(i:i+a-1,j:j+a-1)=topo2;
+        clear topo1 topo2;
+    end
+end
+
+
+
+
+figure, imagesc(topo), colormap(gray)
+figure, imagesc(topon), colormap(gray)
+
+
+
+
+
+
+end

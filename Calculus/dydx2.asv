@@ -1,0 +1,17 @@
+function [y1 x1] = dydx2(pwr,y0,varargin)
+if size(varargin,2) ==0
+    x0 = 1:length(y0);
+elseif size(varargin,2) > 1
+    fprintf('Too many input paramters')
+    return;
+else
+    x0 = varargin{1};    
+end
+
+if pwr ~= 1
+    [y1 x1] = dydx2(pwr-1,y0,x0);
+else
+    y1 = diff(y0)./diff(x0);
+    dx = diff(x0);
+    x1 = x0(1:end-1) + dx/2;
+end

@@ -1,0 +1,27 @@
+function transform = transform_map(map,A1,B1,A0,B0)
+
+M = [A1(1) A1(2)   0     0
+        0      0   A1(1) A1(2) 
+        B1(1) B1(2)   0     0
+        0      0   B1(1) B1(2)]; 
+
+b = [A0(1); A0(2); B0(1); B0(2)];
+
+x = inv(M)*
+
+xform2 = [1   -0.2   0
+         0.5 1     0
+         0   0     1];
+  
+xform = xform2;
+     
+shearing = maketform('affine',xform);
+[G xdata ydata]= imtransform(G4KMap(:,:,11),shearing);
+G = imtransform(G4KMap, shearing,... 
+                        'UData',[-128 128],...
+                        'VData', [-128 128],...
+                        'XData',[-128 128],...
+                        'YData', [-128 128]);
+
+pcolor(G(:,:,10)); shading interp;
+G = G(1:256,1:256);

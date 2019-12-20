@@ -1,0 +1,19 @@
+function new_data = bilaterial_filt_dialogue(data)
+       prompt={'Specify Filter Window Size (px)','Specify Spatial Domain SD',...
+           'Specify Intensity Domain SD'};
+       name='Bilateral Filter Parameters';
+       numlines=1;
+       defaultanswer= {'1','0','0'};
+       answer = inputdlg(prompt,name,numlines,defaultanswer); 
+       w = str2double(answer{1});
+       sigma(1) = str2double(answer{2});
+       singma(2) = str2double(answer{3});
+       
+       [nr nc nz] = size(data.map);
+       new_data = data;
+       tmp = 
+       for i = 1:nz
+           
+       end
+       
+end

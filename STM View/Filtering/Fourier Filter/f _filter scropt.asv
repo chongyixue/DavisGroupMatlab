@@ -1,0 +1,19 @@
+%% 
+[X Y] = meshgrid(1:256, 1:256);
+%%
+g1 = Gaussian_v2(1:256,1:256,5,5,0,[144,77],1);
+g2 = Gaussian_v2(1:256,1:256,5,5,0,[77,113],1);
+g3 = Gaussian_v2(1:256,1:256,5,5,0,[114,181],1);
+g4 = Gaussian_v2(1:256,1:256,5,5,0,[181,145],1);
+img_plot2(g1+g2+g3+g4);
+%%
+filter = g1+g2+g3+g4;
+%%
+filter  = Gaussian_v2(1:256,1:256,
+%%
+F = fourier_transform2d(obj_90216A20_T.map,'none','complex','ft');
+F_filt = F.*filter;
+%%
+new_topo = fourier_transform2d(F_filt,'none','complex','ift');
+%%
+img_plot2(real(new_topo))

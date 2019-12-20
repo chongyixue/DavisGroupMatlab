@@ -1,0 +1,18 @@
+function S = find_th_v1(img,crop_width)
+cw = crop_width;
+A = pick_pts(img);
+uiwait;
+n = size(A,1);
+S = zeros(n,2);
+img_plot2(img);
+for i = 1:n
+    i
+    x = A(i,1); y = A(i,2);
+    box = img(x-cw:x+cw,y-cw:y+cw);
+    [xmax ymax] = find(abs(box) == max(max(abs(box))));
+    xmax = xmax + x; ymax = ymax + y;
+    S(i,1) = xmax; S(i,2) = ymax;
+    hold on; plot(xmax,ymax,'rx');
+end
+
+end

@@ -1,0 +1,84 @@
+function [Y,YT,YZ,map1c,map2c,topo1c,topo2c]=fvfetese(data1,data2,a1,a2,tdata1,tdata2,bon)
+
+
+a1 = round(a1);
+a2 = round(a2);
+
+dx = a1(1) - a2(1);
+dy = a1(2) - a2(2);
+
+if strcmp('blur',bon)==1
+    new_data1 = gauss_blur_image(data1,5,1);
+    new_data2 = gauss_blur_image(data2,5,1);
+    new_tdata1 = gauss_blur_image(tdata1,5,1);
+    new_tdata2 = gauss_blur_image(tdata2,5,1);
+else
+    new_data1 = data1;
+    new_data2 = data2;
+    new_tdata1 = tdata1;
+    new_tdata2 = tdata2;
+end
+
+map1 = new_data1.map;
+map2 = new_data2.map;
+topo1 = new_tdata1.map;
+topo2 = new_tdata2.map;
+
+[nx, ny, ne] = size(map1);
+map1c = zeros(nx,ny,ne);
+map2c = zeros(nx,ny,ne);
+topo1c = zeros(nx,ny);
+topo2c = zeros(nx,ny);
+
+if dx < 0
+    map1c(1-dx:end,:,:) = map1(1:end+dx,:,:);
+    map2c(1-dx:end,:,:) = map2(1-dx:end,:,:);
+    topo1c(1-dx:end,:,:) = topo1(1:end+dx,:,:);
+    topo2c(1-dx:end,:,:) = topo2(1-dx:end,:,:);
+end
+if dx > 0
+    map1c(1:end-dx,:,:) = map1(1+dx:end,:,:);
+    map2c(1:end-dx,:,:) = map2(1:end-dx,:,:);
+    topo1c(1:end-dx,:,:) = topo1(1+dx:end,:,:);
+    topo2c(1:end-dx,:,:) = topo2(1:end-dx,:,:);
+end
+if dy < 0 
+    map1c(:,1-dy:end,:) = map1c(:,1:end+dy,:);
+    map2c(:,1-dy:end,:) = map2c(:,1-dy:end,:);
+    topo1c(:,1-dy:end,:) = topo1c(:,1:end+dy,:);
+    topo2c(:,1-dy:end,:) = topo2c(:,1-dy:end,:);
+end
+if dy > 0
+    map1c(:,1:end-dy,:) = map1c(:,1+dy:end,:);
+    map2c(:,1:end-dy,:) = map2c(:,1:end-dy,:);
+    topo1c(:,1:end-dy,:) = topo1c(:,1+dy:end,:);
+    topo2c(:,1:end-dy,:) = topo2c(:,1:end-dy,:);
+end
+
+[nx, ny, ne] = size(map1c);
+
+Y = zeros(nx, ny);
+YZ = zeros(nx, ny);
+YT = zeros(nx, ny);
+cohmap = zeros(nx,ny);
+
+for i=1:nx
+    for j=1:ny
+        Y(i,j) = sum(abs(map1c(i,j,:)-map2c(i,j,:)));
+        YZ(i,j) = sum(abs(map1c(i,j,:)-map2c(i,j,:))./(abs(map1c(i,j,:))+abs(map2c(i,j,:))));
+%         YZ(i,j) = sum(abs(map1c(i,j,11)-map2c(i,j,11)));
+        YT(i,j) = sum(abs(topo1c(i,j,:)-topo2c(i,j,:)));
+        spec(1:ne)=map2c(i,j,:);
+        spec = spec/max(spec);
+        cohmap(i,j) = spec(6:8)/3 + spec(
+    end
+end
+
+ img_plot3(topo1c)
+ img_plot3(topo2c)
+figure, img_plot4(Y)
+figure, img_plot4(YZ)
+figure, img_plot4(YT)
+
+end
+        

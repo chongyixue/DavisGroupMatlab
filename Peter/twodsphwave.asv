@@ -1,0 +1,43 @@
+function F = twodsphwave(x,xdata)
+%% Fitting function for a two-dimensional Gaussian with possibly rotated
+%% axes.
+
+%% Rotate by angle x(7)
+xdatarot(:,:,1)=xdata(:,:,1)*cos(x(7))-xdata(:,:,2)*sin(x(7));
+ydatarot(:,:,1)=xdata(:,:,1)*sin(x(7))+xdata(:,:,2)*cos(x(7));
+x0rot=x(2)*cos(x(7))-x(4)*sin(x(7));
+y0rot=x(2)*sin(x(7))+x(4)*cos(x(7));
+
+%% Two-dimensional Gaussian
+% F= abs(x(1) * exp (- (1i* ( (xdatarot(:,:,1)-x0rot).*x(3) + (ydatarot(:,:,1)-y0rot).*x(5) ) ) ) +x(6));
+% 
+% F= x(1)*(cos(2*pi*((xdatarot(:,:,1)-x0rot).*x(3)+(ydatarot(:,:,1)-y0rot).*x(5)))+...
+%     cos(2*pi*((xdatarot(:,:,1)-x0rot).*x(8)+(ydatarot(:,:,1)-y0rot).*x(9))))...
+%     ./sqrt((xdatarot(:,:,1)-x0rot).^2+(ydatarot(:,:,1)-y0rot).^2)+x(6);
+
+F= x(1)*cos(((xdatarot(:,:,1)-x0rot).*x(3)+(ydatarot(:,:,1)-y0rot).*x(5)) + 0.77417)+...
+    x(10) *cos(((xdatarot(:,:,1)-x0rot).*x(8)+(ydatarot(:,:,1)-y0rot).*x(9)) - 0.63462) +x(6);
+% figure;
+% imagesc(F)
+
+% x = [1, 128, 1.74*0.69, 128, 0.58*0.69, 0, 0, 0.44*0.69, -1.89*0.69, 1];
+% [X,Y]=meshgrid(1:1:255,1:1:255);
+% xdata(:,:,1)=X;
+% xdata(:,:,2)=Y;
+% F1 = zeros(255,255);
+% F = twodsphwave(x,xdata);
+% F(128,128) = 0;
+% F1 = F1+F;
+% F1 = F1/max(max(F1));
+% figure, imagesc(F1)
+% axis image
+% figure, imagesc(abs(fftshift(fft2(F1))))
+% axis image
+% 
+% F2 = medfilt2(F1);
+% figure, imagesc(F2)
+% axis image
+
+figure, plot(S.e(1:end),S.ave(1:end),'+-')
+
+

@@ -1,0 +1,12 @@
+function map=crop_map_center(map,siz)
+% like crop_map, but takes the center section
+[sy,sx,sz]=size(map);
+bx=ceil((sx-siz)/2);
+by=ceil((sy-siz)/2);
+lmin=1;
+delt=lmax-lmin+1;
+map2=zeros(delt,delt,sz);
+for i=1:sz
+    map2(:,:,i)=map(lmin:lmax,lmin:lmax,i);
+end
+map=map2;

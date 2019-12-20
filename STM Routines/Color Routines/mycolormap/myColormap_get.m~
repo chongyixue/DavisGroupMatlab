@@ -1,0 +1,13 @@
+function myColormap_get(name)
+% gets the values
+which=[' /Applications/MATLAB74/work/mycolormap/myColormap_'...
+    name '.dat'];
+thiscmaphere=load(which);
+colormap(thiscmaphere)
+clear thiscmaphere
+
+
+
+
+
+

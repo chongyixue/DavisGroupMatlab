@@ -1,0 +1,27 @@
+function y = dos_hf
+
+k_res = 0.0001;
+k_st = 0;
+k_end = 1;
+
+count = 1;
+
+E_tol = 0.001;
+E1 = low_band(k_st,0);
+E2 = low_band(k_st + k_res,0);
+
+index = 1;
+while k_st <= k_end    
+    N(index,1) = E1;
+    while(abs(E1 - E2) < E_tol)
+        count = count + 1;
+        E2 = low_band(k_st + count*k_res,0);
+    end
+    N(index,2) = count;
+    E1 = E2;
+    k_st = k_st + count*k_res;
+    count = 0;
+    index = index + 1;
+end
+figure; plot(N(:,2),N(:,1))
+end

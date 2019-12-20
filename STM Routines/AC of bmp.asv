@@ -1,0 +1,19 @@
+%%
+I2 = im2double(I); 
+I3 = rgb2gray(I2);
+%this produces an image with values from 0..1 with 1 being white
+%%
+%invert colors
+%I4 = 1 - I3;
+A1 = xcorr2(I4);
+%%
+hbar = 6.58211899e-16;
+E = 0.005;
+k = sqrt(2*E)/hbar;
+%%
+eV/eV
+
+J = kg m2/s2
+J = 6.24150974e18 eV
+
+E = 1/m2*eV2 s2/2 = 

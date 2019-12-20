@@ -1,0 +1,15 @@
+%% Linecut Analysis of URu2Si2 gap map
+
+strleft.map = (F_left_edge_gfilt_tr_sym);
+strleft.r = F_G.r;
+strright.map = (F_right_edge_gfilt_tr_sym);
+strright.r = F_G.r;
+%%
+l_px_avg = 2; r_px_avg = 4;
+mid = floor(length(strleft.r)/2) + 1; 
+cut_left = linecut3(strleft,[129 129],[250 250],l_px_avg);
+cut_right = linecut3(strright,[129 129],[129 250],r_px_avg);
+
+n1 = length(cut_left); n2 = length(cut_right);
+curve_plot(sqrt(2*(strleft.r(129:250-1).^2)),cut_left,'bx',['Left Edge Cut Diagonal - avg px ' num2str(l_px_avg)]);
+curve_plot(strright.r(129:250-1),cut_right,'rx',['Right Edge Cut Horizontal - avg px ' num2str(r_px_avg)]);

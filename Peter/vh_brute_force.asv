@@ -1,0 +1,98 @@
+function vh_brute_force(data,field,width,length,vspec,lec,hec,rod,dmap)
+
+rawmap = data.map;
+
+if strcmp(rod,'dmap')==1
+    data.map = dmap;
+end
+
+gs = 5;
+sig =1;
+ 
+
+new_data = gauss_blur_image(data,gs,sig);
+
+rawmapb = gauss_blur_image(rawmap,gs,sig);
+
+vn = vortexnumber(field,width,length);
+
+vn = round(vn);
+
+cohlen = 40 / ( data.r(2)-data.r(1) );
+cohlen = round(cohlen);
+[nx, ny, le] = size(data.map);
+
+for j = 1:le
+    if data.e(j) == 0
+        zlayer = j;
+    end
+    if data.e(j) == lec;
+        leclay = j;
+    end
+    if data.e(j) == hec;
+        heclay = j;
+    end
+end
+
+x = zeros(vn);
+y = zeros(vn);
+xb = zeros(vn);
+yb = zeros(vn);
+
+tic
+
+
+vspecip = interp1(vspec(:,1),vspec(:,2),data.e(leclay:heclay),'spline');
+figure, plot(vspec(:,1),vspec(:,2),'r',data.e(leclay:heclay),vspecip,'bo','LineWidth',2,...
+    'MarkerSize',10)
+
+for i=1:vn
+    [mvy, mvindy] = max(data.map(:,:,zlayer));
+    [mvx, mvindx] = max(max(data.map(:,:,zlayer)));
+    y(i) = mvindy(mvindx);
+    x(i) = mvindx;
+    [mvby, mvbindy] = max(new_data.map(:,:,zlayer));
+    [mvbx, mvbindx] = max(max(new_data.map(:,:,zlayer)));
+    yb(i) = mvbindy(mvbindx);
+    xb(i) = mvbindx;
+    
+    spm
+    
+    
+    cm = circlematrix(nx,cohlen,y,x);
+    cmo = ones(nx, ny) - cm;
+    cmb = circlematrix(nx,cohlen,yb,xb);
+    cmbo = ones(nx, ny) - cmb;
+    
+    figure, imagesc(cm)
+    axis image
+    figure, imagesc(cmo)
+    axis image
+    figure, imagesc(cmb)
+    axis image
+    figure, imagesc(cmbo)
+    axis image
+    
+    data.map(:,:,zlayer) = data.map(:,:,zlayer) .* cmo;
+    new_data.map(:,:,zlayer) = new_data.map(:,:,zlayer) .* cmbo;
+    
+    t = 1;
+    for k=leclay:heclay
+        rrawmap(:,:,t) = rawmap(:,:,k) .* cm;
+        rrawmapb(:,:,t) = rawmapb(:,:,k) .* cmb;
+        t = t+1;
+    end
+    
+end
+
+    figure;
+    img_plot4(data.map(:,:,zlayer))
+    figure;
+    img_plot4(new_data.map(:,:,zlayer))
+    
+    toc
+    test = 1;
+    
+
+
+end

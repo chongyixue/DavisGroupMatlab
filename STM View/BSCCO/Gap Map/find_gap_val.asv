@@ -1,0 +1,16 @@
+function gap_val_in_map = find_gap_val(gap_val,map_energy)
+if gap_val == 0
+    gap_val_in_map = 0;
+    return;
+end
+tmp_ind = find(map_energy == gap_val);
+if ~isempty(tmp_ind)
+    gap_val_in_map = map_energy(tmp_ind);
+    return;
+else
+    %subt = (gap_val - map_energy)*sign(gap_val);
+    %gap_val_in_map = sign(gap_val)*max(sign(gap_val)*(map_energy(subt >  0)));    
+    subt = abs(gap_val - map_energy);
+    gap_val_in_map = map_energy(subt == min(subt))
+    
+end

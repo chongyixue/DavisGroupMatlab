@@ -1,0 +1,11 @@
+function MRN_dialogue(data)
+prompt={'Pixel Average Radius'};
+name='MNR Map Options';
+numlines=1;         
+defaultanswer={'0'};
+answer = inputdlg(prompt,name,numlines,defaultanswer);
+
+new_data = MNR(data,str2double(answer));
+
+img_obj_viewer2(new_data);
+end

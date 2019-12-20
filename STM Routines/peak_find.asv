@@ -1,0 +1,34 @@
+[nr nc nz] = size(G_recon.map);
+maxp = zeros(nr,nc);
+
+for i = 1:nr
+    for j=1:nc
+        spect =  squeeze(squeeze(G_recon.map(i,j,:)));
+        maxp(i,j) = G_recon.e(find(spect == max(spect)));
+    end
+end
+%%
+[nr nc nz] = size(G2.map);
+maxp = zeros(nr,nc);
+for i = 1:1
+    for j = 1:1
+        p_poly = polyfit(G2.e',squeeze(squeeze(G2.map(i,j,:))),6);
+        %y = polyval(G2.e(1:end),p_poly)
+        %figure; plot(G2.e',y);
+    end
+end
+y = zeros(30,1);
+for i = 1:30
+    y(i) = polyval(G2.e(i),p_poly);
+end
+figure; plot(G2.e,y)
+
+%%
+y = zeros(1,61);
+for i=1:61
+    layer = G1.map(:,:,i);
+    corc = corrcoef(maxp,layer);
+    y(i) = (corc(1,2));
+end
+figure; plot(G1.e,y);
+    

@@ -1,0 +1,14 @@
+function unit_cell_avg(img,phase,crop_region)
+[nr nc] = size(crop_region);
+avg_img = zeros(nr,nc);
+
+for i = 1:10
+    for j = 1:10
+        
+        A = ((phase.phi1 > phase.phi1(7,63)- tol) & (phase.phi1 < phase.phi1(7,63) + tol)...
+    & (phase.phi2 > phase.phi2(7,63)- tol) & (phase.phi2 < phase.phi2(7,63) + tol));
+        avg_img(i,j) =
+    end
+end
+
+end

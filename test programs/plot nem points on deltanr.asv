@@ -1,0 +1,9 @@
+
+img_plot2(Delta_NR_pos);
+colormap(Cmap.PurBlaCop);
+caxis([-0.001 0.001])
+
+hold on;
+for i=1:length(avg_spct.pos_site)
+    plot(pos_site(i,2),pos_site(i,1),'r.'
+end

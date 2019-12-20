@@ -1,0 +1,8 @@
+function MNQ_E(data,pt1,pt2,width)
+map = data.map; e = data.e;
+nz = size(map,3);
+mnq = zeros(nz);
+for i = 1
+    map(pt1(),pt1(2))
+end
+end

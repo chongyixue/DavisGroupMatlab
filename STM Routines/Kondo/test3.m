@@ -1,0 +1,74 @@
+%Balatsky Model
+syms a e0 t D Q k func;
+Q = 0.75;
+balatsky1 = (2*a*(k)^2 + 2*e0 + 2*k*Q*cos(t) + Q^2)/2 - (((2*k*Q*cos(t)+Q^2)^2 + 4*D^2)^0.5)/2;
+balatsky2 = (2*a*(k)^2 + 2*e0 + 2*k*Q*cos(t+pi/4) + Q^2)/2 + (((2*k*Q*cos(t+pi/4)+Q^2)^2 + 4*D^2)^0.5)/2;
+
+%kondo1 = (a*(q/2)^2 + 10 + l)/2 - (((a*(q/2)^2 + 10 - l)^2 + V^2)^0.5)/2;
+%kondo2 = (a*(q/2)^2 + 10 + l)/2 + (((a*(q/2)^2 + 10 - l)^2 + V^2)^0.5)/2;
+
+func = 0;
+
+for i =1:10
+    digits(7);
+    func = func + (subs(balatsky1,k,sym(low_band(i,2)/2,'d')) - sym(low_band(i,1),'d'))^2;
+end
+for i =1:10
+    digits(7);    
+    func = func + (subs(balatsky2,{k,pi},[sym(high_band(i,2)/2,'d') sym(0,'d')]) - sym(high_band(i,1),'d'))^2;
+end
+
+%% constrained optimization - confun function for constraints
+g = @(vec) subs(func, 'a,e0,t,D', vec);
+gg = @(p) g([p(1) p(2) p(3) p(4)]);
+options = optimset('Algorithm','active-set');
+tic; [xx2,fval] = fmincon(gg,[-100 10 1 3],[],[],[],[],[],[],@confun,options);toc;
+%%
+figure
+for i=1:100
+    plot (i/10*pi,gg([xx2(1) xx2(2) i/10*pi xx2(4)]),'rx')
+    hold on;
+end
+%% unconstrained optimization
+g = @(vec) subs(func, 'a,e0,t,D', vec);
+gg = @(p) g([p(1) p(2) p(3) p(4)]);
+s = optimset('MaxFunEvals',3000,'MaxIter',3000,'TolFun',1e-4);
+tic; [xx2,fval] = fminunc(gg,[-100 10 1 3],s); toc;
+%%
+%xx2(1) = -274.1192; xx2(2) = 9.3928; xx2(3) = -4.4206; xx2(4) = -3.8669; xx2(5) = 0.2108;
+xx2(5) = Q;
+k=0.0:0.01:0.5;
+y1 = balatsky_l(k,xx2(1),xx2(2),xx2(3),xx2(4),xx2(5));
+y2 = balatsky_h(k,xx2(1),xx2(2),xx2(3),xx2(4),xx2(5));
+
+figure; plot(low_band(:,2)/2,low_band(:,1),'rx');
+hold on; plot(high_band(:,2)/2,high_band(:,1),'rx');
+hold on; plot(k,y1,'b'); hold on; plot(k,y2,'b');
+%%
+xx2(5) = Q;
+k=0.0:0.001:0.3;
+y1 = balatsky_l(k,xx2(1),xx2(2),xx2(3),xx2(4),xx2(5));
+y2 = balatsky_h(k,xx2(1),xx2(2),xx2(3),xx2(4),xx2(5));
+y3 = xx2(1)*k.^2 + xx2(2); % conduction band
+figure; plot(low_band(:,2)/2,low_band(:,1),'rx');
+hold on; plot(high_band(:,2)/2,high_band(:,1),'rx');
+hold on; plot(k,y1,'b'); hold on; plot(k,y2,'b');
+xlim([0.0 0.22])
+hold on; plot(k,y3,'g-');
+%hold on; plot(k,xx2(3),'k')
+%hold on; plot(k,0.74);
+%hold on; plot(k,balatsky_l(0.0,xx2(1),xx2(2),xx2(3),xx2(4),xx2(5)));
+%%
+[dy1 dk] = num_der2(1,y1,k);
+[dy3 dk] = num_der2(1,y3,k);
+eff_mass_ratio = dy3./dy1;
+figure; plot(k,eff_mass_ratio);
+%%
+%balatsky_l(0.142155,xx2(1),xx2(2),xx2(3),xx2(4),xx2(5))
+balatsky_l(0.142155,xx2(1),xx2(2),xx2(3),xx2(4),xx2(5)) - balatsky_h(0.142155,xx2(1),xx2(2),xx2(3),xx2(4),xx2(5))
+%balatsky_l(0,xx2(1),xx2(2),xx2(3),xx2(4),xx2(5)) - balatsky_h(0,xx2(1),xx2(2),xx2(3),xx2(4),xx2(5))
+%figure; plot(0:0.01:0.5,(balatsky_h(0:0.01:0.5,xx2(1),xx2(2),xx2(3),xx2(4),xx2(5)) - balatsky_l(0:0.01:0.5,xx2(1),xx2(2),xx2(3),xx2(4),xx2(5))))
+%figure; plot(0:0.01:0.500,(balatsky_h(0:0.01:0.500,xx2(1),xx2(2),xx2(3),xx2(4),xx2(5))))
+%hold on; plot(0:0.01:0.500,(balatsky_l(0:0.01:0.500,xx2(1),xx2(2),xx2(3),xx2(4),xx2(5))))
+%%
+figure; plot(k,dy1./dk)

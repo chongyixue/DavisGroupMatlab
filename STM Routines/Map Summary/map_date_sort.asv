@@ -1,0 +1,13 @@
+function sorted_map_summary = map_date_sort(map_summary)
+n = length(map_summary);
+%d = [map_summary.date];
+
+for i=1:n
+    d = map_summary(i).date;
+    [month r] = strtok(d,'/');
+    [day r] = strtok(r,'/');
+    [year r] = strtok(r,'/');
+end
+    
+    
+end

@@ -1,0 +1,19 @@
+function con_data = LIA_conv2(energy,spectra,VA,dir)
+spc = abs(energy(1) - energy(2));
+n = length(energy);
+%con_data = zeros(1,n);
+
+res = res_func(energy,VA,0);
+con_data = conv(res,spectra);
+con_data = con_data(21:61);
+
+nlong = length(con_data);
+mid = floor(nlong/2);
+
+con_data = con_data(
+% for i = 1:n
+%     con_data(i) = sum(res_func(energy,VA,dir*energy(i)).*spectra)*spc;
+% end
+%figure; plot(energy,spectra); 
+%hold on; plot(energy,con_data,'r');
+end

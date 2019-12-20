@@ -1,0 +1,10 @@
+function new_data = map_rad_avg(data)
+    [nr nc nz] =size(data.map);
+    avgmap = zeros(nr,nc,nz);
+    for i = 1:4
+        avgmap = avgmap + rotate_map(data.map,i*90/4);
+    end
+    avgmap = avgmap/4;
+    new_data = data;
+    new_data.map = avgmap;
+end

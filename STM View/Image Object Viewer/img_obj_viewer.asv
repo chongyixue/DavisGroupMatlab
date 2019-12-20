@@ -1,0 +1,90 @@
+function h = img_obj_viewer(Call_App_Handle)
+data =  
+%  Create and then hide the GUI as it is being constructed.
+   f = figure('Name',data.name,...
+              'NumberTitle', 'off',...              
+              'Visible','off',...
+              'Position',[150,150,320,350],...
+              'MenuBar', 'none');
+              
+ 
+
+          
+   %  Construct the components.
+%    hsurf = uicontrol('Style','pushbutton','String','Surf',...
+%           'Position',[315,220,70,25],...
+%           'Callback',{@surfbutton_Callback});
+%    hmesh = uicontrol('Style','pushbutton','String','Mesh',...
+%           'Position',[315,180,70,25],...
+%           'Callback',{@meshbutton_Callback});
+%    hcontour = uicontrol('Style','pushbutton',...
+%           'String','Countour',...
+%           'Position',[315,135,70,25],...
+%           'Callback',{@contourbutton_Callback}); 
+    
+   str={['coord: ' '( ' num2str(400, '%6.2f') ' , '  num2str(400,'%6.2f') ' )',...
+         '   ' 'pixel: ' '( ' num2str(400,'%6.0f') ' , ' num2str(400,'%6.0f') ' )' ],...
+        ['z: ' '( ' num2str(0, '%6.3f') ' )']};
+    
+   coord_tb = uicontrol('Style','text',...                
+                'Position',[90,5,225,30],...
+                'String', str);
+                      
+   bias = uicontrol('Style','text',...
+                     'String','Bias (mV)',...
+                     'Position',[3,25,65,13]);
+   energy_list = uicontrol('Style','popupmenu',...
+          'String', num2str(1000*data.e','%10.2f'),...
+          'Value', 1,...
+          'Position',[3,0,80,25],...
+          'Callback',{@plot_Callback});
+      
+   ha = axes('Units','Pixels','Position',[0,40,320,320]);  
+   align([bias, energy_list],'Center','None');   
+   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Menu Bar%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+f0 = uimenu('Label','Save');
+
+f1 = uimenu('Label','Display');
+    f1a = uimenu(f1,'Label','Select Palette');
+    f1b = uimenu(f1,'Label','Adjust Histogram');
+
+f2 = uimenu('Label','Process');
+    f2a = uimenu(f2,'Label','Background Subtraction');
+        f2aa = uimenu(f2a,'Label','0');
+        f2ab = uimenu(f2a,'Label','1');
+        f2ac = uimenu(f2a,'Label','2');
+        f2ad = uimenu(f2a,'Label','3');
+        f2ae = uimenu(f2a,'Label','4');
+        f2af = uimenu(f2a,'Label','5');
+        f2ag = uimenu(f2a,'Label','6');
+    f2b = uimenu(f2,'Label','Math');
+        f2ba = uimenu(f2b,'Label', 'Add/Subtract');
+        f2bb = uimenu(f2b,'Label', 'Multiply/Divide');
+        f2ba = uimenu(f2b,'Label', 'Add/Subtract');
+
+f3 = uimenu('Label','Analysis');
+    f3a = uimenu(f3,'Label','BSCCO');
+        f3aa = uimenu(f3a,'Label', 'Gap Map');
+      
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Initialize the GUI.
+% Change units to normalized so components resize automatically.
+set([f,ha],'Units','normalized');
+
+%Create a plot in the axes.
+pcolor(data.map(:,:,1)); axis off; axis equal; shading flat;
+
+% Move the GUI to the center of the screen.
+movegui(f,'center')
+
+% Make the GUI visible.
+set(f,'Visible','on');
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Callback Functions
+function plot_Callback(hObject,eventdata)
+   layer=get(energy_list,'Value'); 
+   pcolor(data.map(:,:,layer)); axis off; axis equal; shading flat;
+end
+
+end

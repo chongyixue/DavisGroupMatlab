@@ -1,0 +1,11 @@
+function con_data = LIA_conv(energy,spectra,VA,dir)
+n = length(energy);
+spc = abs(energy(1) - energy(2));
+con_data = zeros(1,n);
+for i = 1:n
+  yres = res_func(energy,VA,energy(i));
+  area = sum(spc*yres);
+  con_data(i) = sum(yres.*spectra)*spc/area;
+end
+%con_data = conv(res_func(energy,VA,0),spectra,'same');
+end

@@ -1,0 +1,10 @@
+function y = kondo_l(x)
+l = 3.2901;
+V = 4.6978;
+a= -58.6676;
+n = 2;
+e0 = 5.54;
+y = (a*x.^n + e0 + l)/2 - (((a*x.^n + e0-l).^2 + V^2).^0.5)/2;
+end
+
+%a=10, V=5 looks good

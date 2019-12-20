@@ -1,0 +1,12 @@
+function [x1 y1] = deriv(y0,vargin)
+if size(vargin,2) ==0
+    x0 = 0:length(y0);
+elseif size(vargin,2) > 1
+    fprintf('Too many input paramters')
+    return;
+else
+    vargin{1}
+end
+y1 = diff(y0)/diff(x0);
+x1 = diff(x0)/2;
+end

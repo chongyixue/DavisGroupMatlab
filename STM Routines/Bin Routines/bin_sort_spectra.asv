@@ -1,0 +1,22 @@
+function [spectra new_map_ct new_map_g] = bin_sort_spectra(binval,data_source, map_target,ctmap)
+n_spectra = size(binval');
+[sy sx sz] = size(map_target.map);
+spectra = zeros(sz,n_spectra);
+new_map = zeros(sy,sx,n_spectra);
+
+for n=1:n_spectra
+    [tmpr tmpc] = find(data_source == binval(n));
+    nspec = size(tmpr);    
+    for i = 1:nspec(1)
+        spectra(:,n) = spectra(:,n) + squeeze(squeeze(map_target.map(tmpr(i),tmpc(i),:)));
+    end
+    if nspec(1) > 0
+        spectra(:,n) = spectra(:,n)/(nspec(1));
+    end
+    tmp = (data_source == binval(n)) ;
+    new_map_g(:,:,n) = tmp.*
+    new_map_ct(:,:,n) = tmp.*ctmap;
+end
+
+end
+    

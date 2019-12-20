@@ -1,0 +1,23 @@
+function [ncy,ncx]=...
+    get_about_maxima(plane,siz,abst)
+
+
+
+[xmax,imax,XMIN,IMIN] = extrema2(plane);
+[cy,cx]=ind2sub(siz,imax);
+[sy,sx]=size(plane);
+cxr=round(cx);cyr=round(cy);
+nn=4;  % PARAMETER
+ind=cyr<nn*abst+1 | cyr>sy-nn*abst-1 |...
+    cxr<nn*abst+1 | cxr>sx-nn*abst-1 ;
+cxr(ind)=[];
+cyr(ind)=[];
+
+ncy=cyr; ncx=cxr;
+
+
+
+pcolor(plane); shading interp;hold on;
+colormap gray
+plot(ncx,ncy,'b+'); 
+hold off

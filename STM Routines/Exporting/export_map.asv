@@ -1,0 +1,35 @@
+function export_map(map,energy,rx,ry,format,directory,filename,clmap,clbnd)
+figure('Color',[0 0 0]);
+sz = size(energy);
+
+xx = [2.225 2.225 -2.225 -2.225];
+yy = [2.225 -2.225 2.225 -2.225];
+
+pp = 2.4968;
+xx = [pp pp -pp -pp];
+yy = [pp -pp pp -pp];
+
+for k=1:sz(2)
+    set(gca, 'NextPlot', 'replace');
+    
+    %plot(xx,yy,'ro','MarkerEdgeColor','k','MarkerFaceColor','r',...
+         %       'MarkerSize',5);
+    %hold on;
+    pcolor(rx,ry,squeeze(map(:,:,k)));colormap(clmap); shading flat;
+    
+    %title([num2str(energy(k)*1000,'%6.2f'),' meV'],...
+    %        'Fontsize',28,'Color',[1 1 1]);
+    
+    hold on;
+    %text(0.37,0.05,[num2str(energy(k)*1000,'%6.2f'),' meV'],'Units','normalized',...
+    %            'Fontsize',18,'Color',[0 0 0]);
+    %title([num2str(energy(k)) ' mV'],'Color','white','FontWeight','bold');
+    axis equal; axis off;
+    [min,max]= get_colormap_limits((map(:,:,k)),clbnd(1)/100,clbnd(2)/100,'h');
+    caxis([min max]);
+    A = getframe(gcf);
+    path = strcat(directory,filename,'_',num2str(k,'%2.0f'),'_',num2str(energy(k)),'.',format);
+    %
+    imwrite(A.cdata,path,format);    
+end
+    
