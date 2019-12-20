@@ -37,7 +37,17 @@ nanonis_STM1_but = uicontrol(fh,'Style','pushbutton',...
             data = '';
         end
         if type ==5 %nanonis map
-            [~,~,~,~,~] = open_map_nanonis(pathname,filename,'plot');
+            extension = filename(end-2:end);
+            switch extension
+                case '3ds'                
+                    [~,~,~,~,~] = open_map_nanonis(pathname,filename,'plot');
+                    
+                case 'sxm'
+                    [~,~] = open_topo_nanonis(pathname,filename,1);
+%                     img_obj_viewer_test(topo)
+                case 'dat'
+                    open_point_spectrum(filename,pathname);
+            end
             data = 'nanonis';
             
         elseif type ==4
@@ -134,13 +144,14 @@ nanonis_STM1_but = uicontrol(fh,'Style','pushbutton',...
             % x-y-piezos has to be corrected for 1.2 K (multiply by factor 1.16) and
             % for ~0.282 K (multiply by factor 1.12)
             
-            prompt = {'Rescale factor:'};
-            name='Rescale distances';
-            numlines=1;
-            defaultanswer={'1'};
-            xyrescale = inputdlg(prompt,name,numlines,defaultanswer);
-            
-            xyr = str2num(xyrescale{1});
+%             prompt = {'Rescale factor:'};
+%             name='Rescale distances';
+%             numlines=1;
+%             defaultanswer={'1'};
+%             xyrescale = inputdlg(prompt,name,numlines,defaultanswer);
+%             
+%             xyr = str2num(xyrescale{1});
+            xyr = 1;
             
             hs.xdist = hs.xdist * xyr;
             hs.ydist = hs.ydist * xyr;
@@ -231,50 +242,62 @@ nanonis_STM1_but = uicontrol(fh,'Style','pushbutton',...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%Callback Functions%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function [var,type,pathname,filename] = STM1_Callback(hObject,eventdata)
         close(fh)
-        [filename,pathname]=uigetfile('*','Select Data File(*.1FL,*.1fl,*.FFL,*.ffl, *.TFR, *.FFR, *.tfr)');
+        [filen,pathname]=uigetfile('*','Select Data File(*.1FL,*.1fl,*.FFL,*.ffl, *.TFR, *.FFR, *.tfr)','MultiSelect','on');
+        %         filename
         pathname
-        if filename == 0;
-            data = [];
-            return;
-        end
-        filetype = filename(end-2:end);
-        cd (pathname);
-        switch filetype
-            case '1FL'     %conductance map
-                type = 0;
-                var = 'G';
-            case '1fl'     %conductance map
-                type = 0;
-                var = 'G';
-            case 'FFL'     %current map
-                type = 1;
-                var = 'I';
-            case 'ffl'     %current map
-                type = 1;
-                var = 'I';
-            case 'TFR'     %topo map
-                type = 2;
-                var = 'T';
-            case 'tfr'     %topo map
-                type = 2;
-                var = 'T';
-            case 'FFR'     % feedback current map
-                type = 3;
-                var = 'IF';
-            case 'DI1'     % point spec
-                type = 4;
-                var = 'PS';
-            otherwise
-                var = -1;
-                type = -1;
-                data = '';
-                disp('Invalid Data Type');
-                return;
-        end
-        data = loadfile(type,var,pathname,filename);
-        plotdata(data)
-
         
+        if iscell(filen)==0
+            filenames{1}=filen;
+        else
+            filenames = filen;
+        end
+        
+        for i=1:length(filenames)
+            filename = filenames{i};
+            
+            if filename == 0;
+                data = [];
+                return;
+            end
+            filetype = filename(end-2:end);
+            cd (pathname);
+            switch filetype
+                case '1FL'     %conductance map
+                    type = 0;
+                    var = 'G';
+                case '1fl'     %conductance map
+                    type = 0;
+                    var = 'G';
+                case 'FFL'     %current map
+                    type = 1;
+                    var = 'I';
+                case 'ffl'     %current map
+                    type = 1;
+                    var = 'I';
+                case 'TFR'     %topo map
+                    type = 2;
+                    var = 'T';
+                case 'tfr'     %topo map
+                    type = 2;
+                    var = 'T';
+                case 'FFR'     % feedback current map
+                    type = 3;
+                    var = 'IF';
+                case 'DI1'     % point spec
+                    type = 4;
+                    var = 'PS';
+                otherwise
+                    var = -1;
+                    type = -1;
+                    data = '';
+                    disp('Invalid Data Type');
+                    return;
+            end
+            data = loadfile(type,var,pathname,filename);
+            plotdata(data)
+            
+        end
+            
     end
 
     function [var,type,pathname,filename] = STM2_Callback(hObject,eventdata)
@@ -313,13 +336,14 @@ nanonis_STM1_but = uicontrol(fh,'Style','pushbutton',...
 
     function [var,type,pathname,filename] = nanonisSTM1_Callback(hObject,eventdata)
         close(fh)
-        [filename,pathname]=uigetfile('*','Select Data File(*.3ds)');
+        [filename,pathname]=uigetfile('*','Select Data File(*.3ds,*.sxm)');
         pathname
         if filename == 0;
             data = [];
             return;
         end
         type = 5;var = 'dummy';
+
         data = loadfile(type,var,pathname,filename);
 
     end

@@ -4,12 +4,14 @@
 function [map,topo,current,parammap,all] =  open_map_nanonis(pathname,filename,varargin)
 
 % filename = 'map2.3ds';
-
-if length(filename)>11
-    name = filename(1:8);
+% filename
+if length(filename)~=12
+    name = inputdlg('Map name (7 chars):','s');
+    name = name{1};
 else
-    name = filename(1:end-4);
+    name = filename(4:11);
 end
+
 filename  = strcat(pathname,filename);
 fid = fopen(filename,'r');
 
@@ -20,13 +22,13 @@ end
 
 %% use nanonis-provided matlab script to read header into structure form
 [header,~,~] = load3ds(filename); %header is a struct
-nx = header.grid_dim(1);
-ny = header.grid_dim(2);
+nx = header.grid_dim(2);
+ny = header.grid_dim(1);
 grid_sett = header.grid_settings;
-cx = grid_sett(1);
-cy= grid_sett(2);
-sx = grid_sett(3);
-sy = grid_sett(4);
+cx = grid_sett(2);
+cy= grid_sett(1);
+sx = grid_sett(4);
+sy = grid_sett(3);
 angle = grid_sett(5);
 
 nxy = max(nx,ny);
@@ -55,12 +57,13 @@ end
 %% assign channels to G or I map (or any other map)
 channels = header.channels;
 % change names of known channels to match 'I' and 'G'
+% specific to physically which chaneel you chose for your nanonis
 for i = 1:length(channels)
     channel = channels{i};
     switch channel
         case 'Current (A)'
             channels{i} = 'I';
-        case 'Input 6 (V)'
+        case 'Input 3 (V)'
             channels{i} = 'G';
     end
 end
@@ -68,11 +71,13 @@ end
 %% now get 1D data
 data = get_1d_data(fid,filename);
 data3D = reshape(data,points_per_px,nx,ny);
-data3D = permute(data3D,[2,3,1]);
+% data3D = permute(data3D,[2,3,1]);
+data3D = permute(data3D,[3,2,1]);
+data3D = flipud(data3D);
 
 %% make general object
 obj.nanonis_info = header;
-obj.r = 10^(-10)*linspace(0,sxy,nxy)'; %in Angstroem
+obj.r = 10^(10)*linspace(0,sxy,nxy)'; %in Angstroem
 obj.e = linspace(data(1),data(2),layers);
 obj.name = name;
 obj.coord_type = 'r';
