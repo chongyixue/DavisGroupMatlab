@@ -1,0 +1,50 @@
+Step1: determine the colormap from python matplotlib.cm. For example, Spring, then save it as a variable
+
+IN PYTHON (note if use of cmasher or other package might be required)
+import matplotlib as plt
+springcolormap = plt.cm.get_cmap('spring')
+springmat = springcolormap(range(256))
+
+Step 2: save this matrix in mat format
+
+IN PYTHON
+import numpy as np
+import scipy.io
+scipy.io.savemat('Spring.mat',dict(x='spring',y=springmat))
+
+step 3: in Matlab, import this .mat file, 
+rename 'y' to 'def'
+remove the fourth column (it is in rgba instead of rgb) 
+
+def = y(:,1:3);
+
+Then save it to this path. 
+
+
+plot_all_color_maps.m in yixue_script/color/ will plot all these colors
+
+
+
+####################
+more succintly in python
+
+cname = 'whatovercolormapname'
+m = plt.cm.get_cmap(cname)
+m = m(range(256))
+scipy.io.savemat(cname+'.mat',dict(x=cname,y=m))
+
+
+############### USE OF CMASHER package ###################
+
+import cmasher as cmr
+import matplotlib.pyplot as plt
+cname = 'whatovercolormapname'
+m = plt.cm.get_cmap('cmr.'+cname)
+m = m(range(256))
+scipy.io.savemat(cname+'.mat',dict(x=cname,y=m))
+
+
+
+
+
+
