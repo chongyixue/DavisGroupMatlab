@@ -1,4 +1,5 @@
-function [name,f,energy_list] = img_obj_viewer_test(in_data)
+
+function [name,f,energy_list] = img_obj_viewer_test(in_data,varargin)
 %2018-9-23 pass on name figure.
 %  Create and then hide the GUI as it is being constructed.
 
@@ -15,7 +16,10 @@ f = figure('NumberTitle', 'off',...
 % color_map_path = '/Users/petersprau/Documents/MATLAB/STM/MATLAB/STM View/Color Maps/';  
 % Windows
 % color_map_path = 'C:\Users\Oliver\Documents\MATLAB\STM\MATLAB\STM View\Color Maps\';             
-color_map_path = 'C:\Users\chong\Documents\MATLAB\STMdemo\MATLAB\STM\STM View\Color Maps\';             
+% color_map_path = 'C:\Users\chong\Documents\MATLAB\STM\MATLAB\STM View\Color Maps\';    
+
+color_map_path = fullfile(fileparts(mfilename('fullpath')),'..','\STM View\Color Maps\');
+
 % make a copy of in_data in guidata - copy by reference invoked so only one copy
 % of object data exists in guidata
 guidata(f,in_data);
@@ -208,9 +212,21 @@ for k = 1:nz
     % pick a common number of bins based on the largest spread of values in
     % one of the layers
     n1 = abs((max(tmp_layer) - min(tmp_layer)))/(2*tmp_std)*1000;
-    n = max(n,floor(n1));    
+%     if n1==Inf
+%         fprintf(strcat('%%%%%%%%%% infinite bins alert %%%%%%%%%%','\n'));
+%         fprintf(strcat('layer = ',num2str(k),'\n'));
+%         fprintf(strcat('tmp_std=',num2str(tmp_std),'\n'));
+%         fprintf(strcat('n1 = ',num2str(n1),'\n'));
+%         fprintf(strcat('max = ',num2str(max(tmp_layer)),'\n'));
+%         fprintf(strcat('min = ',num2str(min(tmp_layer)),'\n'));
+%         fprintf(strcat('range = ',num2str(abs((max(tmp_layer) - min(tmp_layer)))),'\n'));
+%     end
+    if n1~=Inf
+        n = max(n,floor(n1));    
+    end
 end
 clear tmp_layer n1 tmp_std
+
 
 for k=1:nz
     [histo.freq(k,1:n) histo.val(k,1:n)] = hist(reshape(data.map(:,:,k),nr*nc,1),n);
@@ -218,11 +234,17 @@ end
 histo.size = [nr nc nz];
 
 %get the initial color map
-color_map = struct2cell(load([color_map_path 'Blue1.mat']));
+if nargin>1
+    initialcolor = varargin{1};
+else
+    initialcolor = 'Blue1';
+end
+color_map = struct2cell(load([color_map_path initialcolor '.mat']));
 color_map = color_map{1};
+
 %initialize color limit values for each layer in caxis
 caxis_val = zeros(nz,2);
-for k=1:nz;
+for k=1:nz
       caxis_val(k,1) = min(histo.val(k,:)); % min value for each layer
       if isnan(caxis_val(k,1))
           caxis_val(k,1) = 0;
@@ -292,9 +314,17 @@ set(f,'Visible','on');
         if xinit > nc || yinit > nr || xinit < 1 || yinit < 1
            return;
         end
+        
+        %% z location string
+        zval = data.map(yinit,xinit,n);
+        zvalstr = num2str(zval, '%6.5g');
+        zstring = ['z: ' '( ' zvalstr ' )'];
+        
+        %%
         str={['coord: ' '( ' num2str(data.r(xinit), '%6.2f') ' , '  num2str(data.r(yinit),'%6.2f') ' )',...
          '   ' 'pixel: ' '( ' num2str(xinit,'%6.0f') ' , ' num2str(yinit,'%6.0f') ' )' ],...
-        ['z: ' '( ' num2str(data.map(yinit,xinit,n), '%6.5f') ' )']};
+        zstring};         
+%         ['z: ' '( ' num2str(data.map(yinit,xinit,n), '%6.5f') ' )']};
         set(coord_tb,'String',str);
         set(coord_tb,'UserData',[xinit yinit]); 
         spect_viewer_handle = get(f1a,'UserData');
@@ -318,7 +348,7 @@ set(f,'Visible','on');
     function histogram_Callback(hObject,evendata)
         layer=get(energy_list,'Value'); 
         %lyr_lin = reshape(data.map(:,:,layer),nr*nc,1);
-        data_histogram_dialogue(layer,histo,f,ha);
+        data_histogram_better_dialogue(layer,histo,f,ha);
     end
 
     function sel_pal_Callback(hObject,eventdata)
