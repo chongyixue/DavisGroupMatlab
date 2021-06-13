@@ -1,6 +1,10 @@
 % 2019-9-24 YXC
 % if we have the coordinates ready, put in varargin, else will prompt
 
+% 2020-4-28 YXC
+% opposite of Gaussian's coordinate is not correct. Key: centerpx =
+% ceil((nx+1)/2);
+
 function newdata = keep_peak_coord(data,varargin)
 
 if isstruct(data)
@@ -9,6 +13,8 @@ else
     [~,nr, nz] = size(data);
 end
 
+
+addtoshiftopposite = 2-mod(nr,2);
 
 center = (nr+1)/2;
 
@@ -27,10 +33,10 @@ if nargin>1
         x = xx(i); y = yy(i);
         if strcmp(maskchoice,'Gauss')
             mask = mask + Gaussian_v2(1:nr,1:nr,gw,gw,0,[x,y],1);
-            mask = mask + Gaussian_v2(1:nr,1:nr,gw,gw,0,[nr-x,nr-y],1);
+            mask = mask + Gaussian_v2(1:nr,1:nr,gw,gw,0,[nr-x+addtoshiftopposite,nr-y+addtoshiftopposite],1);
         elseif strcmp(maskchoice,'Circle')
             mask = mask + circle_mask(nr,x,y,gw);
-            mask = mask + circle_mask(nr,nr-x,nr-y,gw);
+            mask = mask + circle_mask(nr,nr-x+addtoshiftopposite,nr-y+addtoshiftopposite,gw);
         end
 %                  figure,imagesc(mask)
     end
@@ -61,7 +67,7 @@ else
                 gw = str2double(answer{3});
                 
                 mask = mask + Gaussian_v2(1:nr,1:nr,gw,gw,0,[x,y],1);
-                mask = mask + Gaussian_v2(1:nr,1:nr,gw,gw,0,[nr-x,nr-y],1);
+                mask = mask + Gaussian_v2(1:nr,1:nr,gw,gw,0,[nr-x+addtoshiftopposite,nr-y+addtoshiftopposite],1);
                 figure,imagesc(mask)
             end
         end

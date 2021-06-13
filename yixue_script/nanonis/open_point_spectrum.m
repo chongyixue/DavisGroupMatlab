@@ -6,6 +6,7 @@ function [struct,bias,conductance] = open_point_spectrum(filename,pathname,varar
 
 % pathname = "C:\Users\chong\Documents\MATLAB\STMdata\Runc75\NbTip_on_NbSe2\";
 % filename = "20191209_005.dat";
+
 wholefilename = strcat(pathname,filename);
 
 fid = fopen(wholefilename,'r');
@@ -25,9 +26,11 @@ pastedornot = 0;
 files = {};
 xtitle = "";
 ytitle = "";
+channel = [];
+currentfile_i=1;
 
 %% plot and stuff
-data = getdata(pathname,filename);
+data= getdata(pathname,filename);
 
 f = figure(...
 'Units','characters',...
@@ -111,7 +114,8 @@ clearall = uicontrol('Parent',f,'Units','normalized','Position',[0.7,0.05,0.1,0.
     'Style','pushbutton','String','Clear all','Callback',@clearall_callback);
 
 updateplot;
-
+bias = x;
+conductance=y;
 %% callback functions
     function pasteclear_callback(~,~)
         pasted_checker;
@@ -147,7 +151,6 @@ updateplot;
     function fileselect_callback(~,~)
         fileID = dropdownfiles.Value;
         filename = files{fileID};
-
         data = getdata(pathname,filename);
         updatedropdown
         updateplot
@@ -202,6 +205,9 @@ updateplot;
         ylabel(ytitle);
         title(filename,'Interpreter','none');
         hold off
+        
+        assignin('base','Ebias',x);
+        assignin('base','dIdV',y);
         
         pasted_checker;
         
@@ -287,7 +293,11 @@ updateplot;
                 
                 if l(j)==tab
                     execute = strcat('struct.',l(1:j-1),'="',l(j+1:end-1),'";');
-                    eval(execute);
+                    try
+                        eval(execute);
+                    catch
+                        warning(strcat("line NOT recorded: ",execute));
+                    end
                     break
                 end
             end

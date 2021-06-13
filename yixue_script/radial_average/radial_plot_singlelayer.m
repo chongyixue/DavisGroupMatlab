@@ -14,7 +14,8 @@ size_r = endpix-center+1;
 rad_avg = zeros(size_r,nz);
 % size(rad_avg)
 for radius = startpix:size_r
-    rad_avg(radius,:) = radial_average_mask(FTmap,radius,startangle,endangle);
+    avg = radial_average_mask(FTmap,radius,startangle,endangle);
+    rad_avg(radius-startpix+1,:) = avg;
 end
 rad_avg = rad_avg';
 % figure,

@@ -1,50 +1,95 @@
-function data = read_map_include_nanonis
+function data = read_map_include_nanonis(varargin)
 %cd ('C:\Data');
 %% include a question which STM the data was taken with since they use
 %% different file-endings
 %% Peter Sprau 01/02/2014
 %% 2019-10-16 added option to open nanonis file (3ds)
 
-fh = figure('Name','Choose STM',...
-    'units','normalized', ...
-    'Position',[0.3,0.3,0.15,0.15],...
-    'Color',[0.6 0.6 0.6],...
-    'MenuBar', 'none',...
-    'NumberTitle', 'off',...
-    'Resize','off');
 
-
-STM1_but = uicontrol(fh,'Style','pushbutton',...
-    'String','STM1',...
-    'units','normalized',...
-    'Position',[0.15 0.5 0.3 0.15],...
-    'Callback',@STM1_Callback);
-
-STM2_but = uicontrol(fh,'Style','pushbutton',...
-    'String','STM2',...
-    'units','normalized',...
-    'Position',[0.15 0.2 0.3 0.15],...
-    'Callback',@STM2_Callback);
-
-nanonis_STM1_but = uicontrol(fh,'Style','pushbutton',...
-    'String','Nanonis STM1',...
-    'units','normalized',...
-    'Position',[0.55 0.5 0.3 0.15],...
-    'Callback',@nanonisSTM1_Callback);
-
+if nargin>0
+    stmname = 'stm1';
+    path = strcat(pwd,'\');
+    skipover = 0;
+    for j=1:length(varargin)
+        if skipover ~=0
+            skipover = skipover-1;
+        else
+            v = varargin{j};
+            if iscell(v)
+                v = v{1};
+            end
+            %         v
+            switch v
+                case 'stm'
+                    skipover = 1;
+                    stmname = varargin{j+1};
+                    
+                case 'path'
+                    skipover = 1;
+                    path = varargin{j+1};
+                    
+                case 'file'
+                    skipover = 1;
+                    file = varargin{j+1};
+                    
+                otherwise
+                    st = num2str(varargin{j});
+                    fprintf(strcat('"',st,'" is not recognized as a property'));
+                    
+            end
+            
+        end
+    end
+    
+    switch stmname
+        case 'stm1'
+            
+        case 'stm2'
+            STM2_Callback;
+    end
+    
+else
+    
+    fh = figure('Name','Choose STM',...
+        'units','normalized', ...
+        'Position',[0.3,0.3,0.15,0.15],...
+        'Color',[0.6 0.6 0.6],...
+        'MenuBar', 'none',...
+        'NumberTitle', 'off',...
+        'Resize','off');
+    
+    
+    STM1_but = uicontrol(fh,'Style','pushbutton',...
+        'String','STM1',...
+        'units','normalized',...
+        'Position',[0.15 0.5 0.3 0.15],...
+        'Callback',@STM1_Callback);
+    
+    STM2_but = uicontrol(fh,'Style','pushbutton',...
+        'String','STM2',...
+        'units','normalized',...
+        'Position',[0.15 0.2 0.3 0.15],...
+        'Callback',@STM2_Callback);
+    
+    nanonis_STM1_but = uicontrol(fh,'Style','pushbutton',...
+        'String','Nanonis STM1',...
+        'units','normalized',...
+        'Position',[0.55 0.5 0.3 0.15],...
+        'Callback',@nanonisSTM1_Callback);
+end
     function data=loadfile(type,var,pathname,filename)
-        if type < 0 
+        if type < 0
             data = '';
         end
         if type ==5 %nanonis map
             extension = filename(end-2:end);
             switch extension
-                case '3ds'                
+                case '3ds'
                     [~,~,~,~,~] = open_map_nanonis(pathname,filename,'plot');
                     
                 case 'sxm'
                     [~,~] = open_topo_nanonis(pathname,filename,1);
-%                     img_obj_viewer_test(topo)
+                    %                     img_obj_viewer_test(topo)
                 case 'dat'
                     open_point_spectrum(filename,pathname);
             end
@@ -52,6 +97,7 @@ nanonis_STM1_but = uicontrol(fh,'Style','pushbutton',...
             
         elseif type ==4
             read_pointspectra3(filename)
+            data = '';
         else
             
             
@@ -60,9 +106,9 @@ nanonis_STM1_but = uicontrol(fh,'Style','pushbutton',...
             start = 2112;
             fseek(fid,start,'bof');
             a = fread(fid,'uint16');
-            
+            assignin('base','a',a);
             % get additional params
-            hs=read_map_extra_v1([pathname filename],fid);
+            hs=read_map_extra_v1([pathname filename],fid)
             s = max(hs.irows,hs.icols);
             fclose(fid);
             
@@ -105,8 +151,9 @@ nanonis_STM1_but = uicontrol(fh,'Style','pushbutton',...
             
             %convert bit data to volts: ECU discretizes -10->+10V in 16 bits
             %w_factor = 20V/2^16, w_zero = -10V
-            
+       
             map = map*hs.w_factor + hs.w_zero;
+     
             if (type == 0)
                 divider = 10; %voltage divider on bias line
                 %convert LIA output to physical data signal using
@@ -114,8 +161,10 @@ nanonis_STM1_but = uicontrol(fh,'Style','pushbutton',...
                 %solve for signal which are the map values
                 %hs.li_foffset = 0;
                 map = (map./(hs.li_expand*10) + hs.li_foffset*(1/100))*hs.li_sens;
+            
                 % make dI/dV by dividing by bias modulation
                 map = map/(hs.li_amp/(100*divider)); %100 comes form ECU divider
+        
                 hs.factor = 1;
                 map = map*hs.factor;
             elseif (type == 1)
@@ -144,13 +193,13 @@ nanonis_STM1_but = uicontrol(fh,'Style','pushbutton',...
             % x-y-piezos has to be corrected for 1.2 K (multiply by factor 1.16) and
             % for ~0.282 K (multiply by factor 1.12)
             
-%             prompt = {'Rescale factor:'};
-%             name='Rescale distances';
-%             numlines=1;
-%             defaultanswer={'1'};
-%             xyrescale = inputdlg(prompt,name,numlines,defaultanswer);
-%             
-%             xyr = str2num(xyrescale{1});
+            %             prompt = {'Rescale factor:'};
+            %             name='Rescale distances';
+            %             numlines=1;
+            %             defaultanswer={'1'};
+            %             xyrescale = inputdlg(prompt,name,numlines,defaultanswer);
+            %
+            %             xyr = str2num(xyrescale{1});
             xyr = 1;
             
             hs.xdist = hs.xdist * xyr;
@@ -217,7 +266,7 @@ nanonis_STM1_but = uicontrol(fh,'Style','pushbutton',...
             end
             
         end
-
+        
     end
     function plotdata(data)
         if isempty(data)
@@ -255,7 +304,7 @@ nanonis_STM1_but = uicontrol(fh,'Style','pushbutton',...
         for i=1:length(filenames)
             filename = filenames{i};
             
-            if filename == 0;
+            if filename == 0
                 data = [];
                 return;
             end
@@ -293,45 +342,69 @@ nanonis_STM1_but = uicontrol(fh,'Style','pushbutton',...
                     disp('Invalid Data Type');
                     return;
             end
+            
+            
             data = loadfile(type,var,pathname,filename);
             plotdata(data)
             
         end
-            
+        
     end
 
     function [var,type,pathname,filename] = STM2_Callback(hObject,eventdata)
-        close(fh)
-        [filename,pathname]=uigetfile('*','Select Data File(*.2FL,*.1FL, *.TFR, *.1FR)');
-        pathname
-        if filename == 0;
-            data = [];
+        if nargin==2
+            close(fh)
+            [filen,pathname]=uigetfile('*','Select Data File(*.2FL,*.1FL, *.TFR, *.1FR)','MultiSelect','on');
+            pathname
+        else
+            pathname = path;
+            filen = file;
+%             varargin
+%             filen = varargin{2};
+%             pathname = varargin{1};
         end
-        filetype = filename(end-2:end);
-        cd (pathname);
-        switch filetype
-            case '2FL'     %conductance map
-                type = 0;
-                var = 'G';
-            case '1FL'     %current map
-                type = 1;
-                var = 'I';
-            case 'TFR'     %topo map
-                type = 2;
-                var = 'T';
-            case '1FR' % feedback current map
-                type = 3;
-                var = 'IF';
-            case 'DI1'     % point spec
-                type = 4;
-                var = 'PS';
-            otherwise
-                data = '';
-                disp('Invalid Data Type');
-                return;
+        
+        if iscell(filen)==0
+            filenames{1}=filen;
+        else
+            filenames = filen;
         end
-        data = loadfile(type,var,pathname,filename);
-        plotdata(data)
+        
+        for i=1:length(filenames)
+            filename = filenames{i};
+            
+            
+            if filename == 0
+                data = [];
+            end
+            filetype = filename(end-2:end);
+            cd (pathname);
+            switch filetype
+                case '2FL'     %conductance map
+                    type = 0;
+                    var = 'G';
+                case '1FL'     %current map
+                    type = 1;
+                    var = 'I';
+                case 'TFR'     %topo map
+                    type = 2;
+                    var = 'T';
+                case '1FR' % feedback current map
+                    type = 3;
+                    var = 'IF';
+                case 'DI1'     % point spec
+                    type = 4;
+                    var = 'PS';
+                otherwise
+                    data = '';
+                    disp('Invalid Data Type');
+                    return;
+            end
+            data = loadfile(type,var,pathname,filename);
+            plotdata(data)
+            
+        end
+        
     end
 
     function [var,type,pathname,filename] = nanonisSTM1_Callback(hObject,eventdata)
@@ -343,9 +416,9 @@ nanonis_STM1_but = uicontrol(fh,'Style','pushbutton',...
             return;
         end
         type = 5;var = 'dummy';
-
+        
         data = loadfile(type,var,pathname,filename);
-
+        
     end
 end
 

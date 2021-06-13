@@ -13,6 +13,7 @@ else
 end
 
 filename  = strcat(pathname,filename);
+assignin('base','fname',filename);
 fid = fopen(filename,'r');
 
 plott = 0;
@@ -69,16 +70,37 @@ for i = 1:length(channels)
 end
 
 %% now get 1D data
-data = get_1d_data(fid,filename);
+d = get_1d_data(fid,filename); %updated 2020/3/8 to load unfinished map.
+assignin('base','d',d);
+[sd,~] = size(d);
+data = zeros(nx*ny*points_per_px,1);
+data(1:sd) = d;
+
+% updated for incomplete map
 data3D = reshape(data,points_per_px,nx,ny);
+assignin('base','data3D',data3D);
 % data3D = permute(data3D,[2,3,1]);
 data3D = permute(data3D,[3,2,1]);
 data3D = flipud(data3D);
 
+assignin('base','data3Dnew',data3D);
+
 %% make general object
 obj.nanonis_info = header;
 obj.r = 10^(10)*linspace(0,sxy,nxy)'; %in Angstroem
-obj.e = linspace(data(1),data(2),layers);
+if strcmp(header.filetype,'MLS')
+   st = header.MLSsegments;
+   en = [];
+   for i=1:st.segments
+       if isempty(en)==0
+           en(end)=[];
+       end
+      en(end+1:end+st.steps_xn(i)) = linspace(st.segment_start_v(i),st.segment_end_v(i),st.steps_xn(i));
+   end
+   obj.e = en;
+else
+   obj.e = linspace(data(1),data(2),layers);
+end
 obj.name = name;
 obj.coord_type = 'r';
 obj.ops = '';
@@ -97,7 +119,8 @@ assignin('base',['obj_' topo.name '_' topo.var],topo); % exports the data to the
 parammap = obj;
 parammap.type = 0;
 parammap.map = zeros(nxy,nxy,n_params);
-parammap.map(1:nx,1:ny,:) = data3D(:,:,1:n_params);
+% parammap.map(1:nx,1:ny,:) = data3D(:,:,1:n_params);
+parammap.map(1:nx,1:ny,:) = reshape(data3D(:,:,1:n_params),nx,ny,[]);
 parammap.ave = squeeze(mean(mean(parammap.map,1)));
 parammap.var = 'Params';
 parammap.e = linspace(1,n_params,n_params)*0.001;
@@ -112,7 +135,8 @@ all.info = header;
 for i = 1:length(channels)
     img_obj = obj;
     img_obj.map = zeros(nxy,nxy,layers);
-    img_obj.map(1:nx,1:ny,:) = data3D(:,:,n_params+(i-1)*layers+1:n_params+(i)*layers);
+%     img_obj.map(1:nx,1:ny,:) = data3D(:,:,n_params+(i-1)*layers+1:n_params+(i)*layers);
+    img_obj.map(1:nx,1:ny,:) = reshape(data3D(:,:,n_params+(i-1)*layers+1:n_params+(i)*layers),nx,ny,[]);
     img_obj.ave = squeeze(mean(mean(img_obj.map,1)));
     img_obj.var = channels{i};
     img_obj.type = 5;
@@ -129,7 +153,12 @@ for i = 1:length(channels)
     if plott==1
         img_obj_viewer_test(img_obj)
     end
-    assignin('base',['obj_' img_obj.name '_' img_obj.var],img_obj); % exports the data to the workspace
+    varname = ['obj_' img_obj.name '_' img_obj.var];
+    varname = strrep(varname,' ','');
+    varname = strrep(varname,'(','_');
+    varname = strrep(varname,')','_');
+    varname = strrep(varname,'/','_');
+    assignin('base',varname,img_obj); % exports the data to the workspace
 end
 
 if plott==1
