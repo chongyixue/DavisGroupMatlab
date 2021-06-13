@@ -34,8 +34,14 @@ end
 [X Y] = meshgrid(img_r,img_r);
 
 q1 = phase.q1; q2 = phase.q2; q3 = phase.q3;
-Q = [q1(1,1) q1(2,1) 1; q2(1,1) q2(2,1) 1; q3(1,1) q3(2,1) 1];
-Inv_Q = inv(Q); % see Hamidian et al. NJP (2011) for details
+Q = [q1(1,1) q1(2,1); q2(1,1) q2(2,1); q3(1,1) q3(2,1)];
+Inv_Q = pinv(Q); %non-square matrix inverse
+% Q = [q1(1,1) q1(2,1) 1; q2(1,1) q2(2,1) 1; q3(1,1) q3(2,1) 1];
+% Inv_Q = inv(Q); % see Hamidian et al. NJP (2011) for details
+
+% Inv_Q
+% Inv_Q*Q
+% Q*Inv_Q
 
 for i = 1:itr
 %     i

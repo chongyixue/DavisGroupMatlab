@@ -15,10 +15,12 @@
 % CODE HISTORY
 %
 % 130513 MHH  Cleaned up and made modular to work with phase_map function
+% 2020 YXC make it work with subpixel values of q and also 3 ref funs for
+% hex system
 %%%%%%%%
 function ref_fun =  lockin_ref_fun_hex(img,img_r,q_px)
 
-[nr nc] = size(img);
+[nr, nc] = size(img);
 px_dim = abs(img_r(1)-img_r(2));
 k0=2*pi/(nc*px_dim);
 if mod(nc,2) == 1
@@ -38,11 +40,13 @@ end
 % end
 
 if mod(nr,2) == 0
-    q = k(q_px) - k((nr/2)+1); % fix k value offsets
+    q = interpolate_q(k,q_px) - k((nr/2)+1);
+%     q = k(q_px) - k((nr/2)+1); % fix k value offsets
 else   
-    q = k(q_px);
+    q = interpolate_q(k,q_px);
+%     q = k(q_px);
 end
-[X Y] = meshgrid(img_r,img_r);
+[X, Y] = meshgrid(img_r,img_r);
 
 %q_px = (x,y) starting with first quadrant Bragg peak and rotating counter
 %clockwise N.B. (x,y) = (col,row);
@@ -65,5 +69,13 @@ ref_fun.sin3= sin(phase3); ref_fun.cos3 = cos(phase3);
 % img_plot2(img,Cmap.Blue2,'IMAGE');
 % img_plot2(ref_fun.sin1,Cmap.Blue2,'X-dir sine');img_plot2(ref_fun.cos1,Cmap.Blue2,'X-dir cosine');
 % img_plot2(ref_fun.sin2,Cmap.Blue2,'Y-dir sine');img_plot2(ref_fun.cos2,Cmap.Blue2,'Y-dir cosine');
+
+    function q = interpolate_q(k,q_px)
+        x = linspace(1,length(k),length(k));
+        q = interp1(x,k,q_px);
+    end
+
+
+
 
 end
