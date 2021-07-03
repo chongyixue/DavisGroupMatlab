@@ -139,6 +139,13 @@ process = uimenu('Label','Process');
         uimenu(math_menu,'Label', 'Multiply/Divide');
         uimenu(math_menu,'Label', 'Add/Subtract');
         uimenu(math_menu,'Label','d/dE','Callback',@deriv_Callback);
+        
+    multiply_menu = uimenu(process,'Label','Loop');
+        uimenu(multiply_menu,'Label', '2','Callback',{@loop_Callback,2});
+        uimenu(multiply_menu,'Label', '3','Callback',{@loop_Callback,3});
+        uimenu(multiply_menu,'Label', '5','Callback',{@loop_Callback,5});
+        uimenu(multiply_menu,'Label','7','Callback',{@loop_Callback,7});
+        
     img_manip_menu = uimenu(process,'Label','Image Manipulation');
         uimenu(img_manip_menu,'Label','Shear Correct','Callback',@shear_cor_Callback);
         uimenu(img_manip_menu,'Label','Symmetrize','Callback',@sym_Callback);
@@ -523,6 +530,14 @@ set(f,'Visible','on');
         data = guidata(f);
         ave_filter_dialogue(data);
     end
+
+    function loop_Callback(~,~,n)
+        data = guidata(f);
+        newdata = expandmap(data,n);
+        assignin('base',strcat('loop_',data.name),newdata);
+        img_obj_viewer_test(newdata);
+    end
+
     function crop_Callback(hOjbect,eventdata)
         data = guidata(f);
         crop_dialogue(data);
